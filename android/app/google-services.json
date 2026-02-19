@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "738579176126",
+    "firebase_url": "https://hydroappsmart-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "hydroappsmart",
+    "storage_bucket": "hydroappsmart.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738579176126:android:5069a79abfd32e6c595cef",
+        "android_client_info": {
+          "package_name": "com.example.hydro_smart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738579176126-l0q2ajuk9tete5pjodfro0mobr1ir4od.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE4NqZAUph-e5-NFXLng9gh-fuwzmwQiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738579176126-l0q2ajuk9tete5pjodfro0mobr1ir4od.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "738579176126-lmomj2mov969tc8uu5a2uqmink4u1ejf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hydroSmart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
