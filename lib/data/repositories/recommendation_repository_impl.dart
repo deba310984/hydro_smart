@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:hydro_smart/core/utils/validators.dart';
 import 'package:hydro_smart/data/models/recommendation_model.dart';
@@ -9,16 +8,8 @@ import 'package:hydro_smart/domain/repositories/recommendation_repository.dart';
 class RecommendationRepositoryImpl implements RecommendationRepository {
   final Dio _dio;
 
-  static const String _androidUrl = 'http://10.0.2.2:8080/api/v1';
-  static const String _localhostUrl = 'http://127.0.0.1:8080/api/v1';
-
-  static String get _baseUrl {
-    if (kIsWeb) return _localhostUrl;
-    // Note: detailed Platform checks (isAndroid) would require dart:io which isn't web-safe
-    // Defaulting to 10.0.2.2 for Android Emulator as primary non-web target
-    return _androidUrl;
-  }
-
+  // API base URL - Replace with your actual AI service endpoint
+  static const String _baseUrl = 'https://hydro-smart-backend.onrender.com/api/v1';
   static const Duration _timeout = Duration(seconds: 30);
 
   RecommendationRepositoryImpl({Dio? dio}) : _dio = dio ?? _createDio();
@@ -192,22 +183,22 @@ class RecommendationRepositoryImpl implements RecommendationRepository {
   Exception _handleDioError(DioException error) {
     return switch (error.type) {
       DioExceptionType.connectionTimeout => Exception(
-          'Connection timeout. Check your internet connection.',
-        ),
+        'Connection timeout. Check your internet connection.',
+      ),
       DioExceptionType.sendTimeout => Exception(
-          'Request timeout. Server is not responding.',
-        ),
+        'Request timeout. Server is not responding.',
+      ),
       DioExceptionType.receiveTimeout => Exception(
-          'Response timeout. Server took too long to respond.',
-        ),
+        'Response timeout. Server took too long to respond.',
+      ),
       DioExceptionType.badResponse => Exception(
-          'Bad response: ${error.response?.statusCode}',
-        ),
+        'Bad response: ${error.response?.statusCode}',
+      ),
       DioExceptionType.cancel => Exception('Request was cancelled.'),
       DioExceptionType.badCertificate => Exception('SSL certificate error.'),
       DioExceptionType.connectionError => Exception(
-          'Connection error. Please check your internet.',
-        ),
+        'Connection error. Please check your internet.',
+      ),
       DioExceptionType.unknown => Exception('Network error: ${error.message}'),
     };
   }

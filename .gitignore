@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ML model artifacts (regenerated at build time on Render)
+ml_backend/*.pkl
+ml_backend/__pycache__/
+backend/firebase-credentials.json
+backend/__pycache__/

@@ -7,6 +7,9 @@ class MarketplaceProduct {
   final int reviewCount;
   final String icon;
   final String description;
+  final String
+      redirectUrl; // URL to redirect to (Flipkart, Amazon, Distributor, etc.)
+  final String source; // "flipkart", "amazon", "distributor", etc.
 
   MarketplaceProduct({
     required this.id,
@@ -17,5 +20,7 @@ class MarketplaceProduct {
     required this.reviewCount,
     required this.icon,
     required this.description,
+    required this.redirectUrl,
+    required this.source,
   });
 }
