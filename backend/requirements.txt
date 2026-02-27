@@ -1,10 +1,7 @@
-# ML Crop Recommendation API
+# Runtime only — lightweight (no pandas, no training deps)
 fastapi==0.115.0
 uvicorn[standard]==0.30.0
 scikit-learn==1.5.2
 joblib==1.4.2
 numpy==1.26.4
-pandas==2.2.2
 pydantic==2.9.0
-python-multipart==0.0.9
-gunicorn==22.0.0
