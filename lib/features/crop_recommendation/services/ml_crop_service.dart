@@ -20,8 +20,8 @@ class MLCropService {
   //    Physical  → http://127.0.0.1:8000 (ADB reverse)
   // ──────────────────────────────────────────────
 
-  /// ✏️  AFTER DEPLOYING TO RENDER, paste your real URL here:
-  static const String _cloudUrl = 'https://hydrosmart-ml.onrender.com';
+  /// Render.com cloud URL (free tier):
+  static const String _cloudUrl = 'https://hydro-smart-backend.onrender.com';
 
   // Compile-time override: flutter run --dart-define=ML_BACKEND_URL=https://...
   static const String _envUrl = String.fromEnvironment('ML_BACKEND_URL');
