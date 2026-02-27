@@ -1,20 +1,25 @@
-# Use official Python image
-FROM python:3.9-slim
+# ──────────────────────────────────────────────
+# Hydro Smart — ML Crop Recommendation Backend
+# ──────────────────────────────────────────────
+# Deployed on Render.com (Docker runtime, free tier).
+# Trains model at build time, serves FastAPI predictions.
+# ──────────────────────────────────────────────
 
-# Set working directory
+FROM python:3.11-slim
+
 WORKDIR /app
 
-# Copy requirements
-COPY requirements.txt .
-
 # Install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy all source (ml_api.py = FastAPI app, train_model.py = trainer)
 COPY . .
 
-# Expose port
-EXPOSE 8080
+# Train model at build time (generates model.pkl from synthetic data)
+RUN python train_model.py --output .
 
-# Run with Gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+EXPOSE 10000
+
+# Render sets $PORT env var automatically
+CMD gunicorn ml_api:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 120
