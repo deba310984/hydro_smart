@@ -363,15 +363,17 @@ def train_and_save(df: pd.DataFrame, output_dir: str = ".") -> dict:
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    # Use fewer trees when sample count is low (saves memory on free hosting)
+    n_trees = 100 if len(df) <= 12000 else 300
     model = RandomForestClassifier(
-        n_estimators=300,
-        max_depth=18,
+        n_estimators=n_trees,
+        max_depth=16,
         min_samples_split=4,
         min_samples_leaf=2,
         max_features="sqrt",
         class_weight="balanced",
         random_state=42,
-        n_jobs=-1,
+        n_jobs=1,  # single-threaded to save memory
     )
     model.fit(X_train, y_train)
 

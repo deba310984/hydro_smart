@@ -16,10 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all source (ml_api.py = FastAPI app, train_model.py = trainer)
 COPY . .
 
-# Train model at build time (generates model.pkl from synthetic data)
-RUN python train_model.py --output .
+# Train a LIGHT model at build time (fewer samples + trees to fit 512MB)
+RUN python train_model.py --output . --samples 10000
 
 EXPOSE 10000
 
-# Render sets $PORT env var automatically
-CMD gunicorn ml_api:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 120
+# 1 worker + preload to fit Render free tier 512MB RAM limit
+CMD gunicorn ml_api:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-10000} --workers 1 --timeout 120 --preload
