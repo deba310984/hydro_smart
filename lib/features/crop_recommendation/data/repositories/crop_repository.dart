@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import '../models/crop.dart';
 import '../../domain/models/crop_filters.dart';
 import '../../../../core/config/api_config.dart';
@@ -8,25 +10,42 @@ class CropRepository {
 
   static const String _baseUrl = ApiConfig.API_BASE_URL;
 
+  // Cache for crops data
+  List<Crop>? _cachedCrops;
+
   /// ===============================
   /// FETCH ALL CROPS FROM BACKEND
   /// ===============================
   Future<List<Crop>> getAllCrops() async {
+    // Return cached data if available
+    if (_cachedCrops != null && _cachedCrops!.isNotEmpty) {
+      return _cachedCrops!;
+    }
+
     try {
-      final response = await _dio.get("$_baseUrl/crops");
+      final response = await _dio.get(
+        "$_baseUrl/crops",
+        options: Options(
+          connectTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
+        ),
+      );
 
       if (response.statusCode == 200) {
         final List data = response.data;
-
-        return data
+        _cachedCrops = data
             .map((e) => Crop.fromJson(Map<String, dynamic>.from(e)))
             .toList();
+        return _cachedCrops!;
       } else {
         throw Exception("Failed to load crops");
       }
     } catch (e) {
-      print("Error fetching crops: $e");
-      rethrow;
+      print("Error fetching crops from API: $e");
+      print("Using fallback crop dataset from assets...");
+      // Return asset data as fallback
+      _cachedCrops = await _loadCropsFromAsset();
+      return _cachedCrops!;
     }
   }
 
@@ -136,6 +155,26 @@ class CropRepository {
     } catch (e) {
       print("Error uploading PDF: $e");
       rethrow;
+    }
+  }
+
+  /// ===============================
+  /// LOAD CROP DATA FROM ASSET JSON
+  /// ===============================
+  Future<List<Crop>> _loadCropsFromAsset() async {
+    try {
+      final jsonString =
+          await rootBundle.loadString('assets/crop_dataset.json');
+      final List<dynamic> jsonList = json.decode(jsonString);
+      return jsonList.map((e) {
+        final map = Map<String, dynamic>.from(e);
+        // Add createdAt if not present
+        map['createdAt'] ??= DateTime.now().toIso8601String();
+        return Crop.fromJson(map);
+      }).toList();
+    } catch (e) {
+      print("Error loading crop dataset from asset: $e");
+      return [];
     }
   }
 }

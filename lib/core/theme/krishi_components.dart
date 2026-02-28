@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'krishi_theme.dart';
 import 'warli_painter.dart';
 
@@ -409,17 +408,28 @@ class SoilHealthCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LIVE MANDI TRACKER - Horizontal scrolling price marquee
+// LIVE MANDI TRACKER - Domestic + International scrolling price marquee
 // ═══════════════════════════════════════════════════════════════════════════
 
 class MandiTracker extends StatefulWidget {
-  final List<MandiPrice> prices;
+  /// Domestic Indian mandi prices
+  final List<MandiPrice> domesticPrices;
+
+  /// International commodity prices
+  final List<MandiPrice> internationalPrices;
+
+  /// Whether prices are still loading
+  final bool isLoading;
+
   final double height;
 
+  /// Legacy constructor for backward compatibility
   const MandiTracker({
     super.key,
-    required this.prices,
-    this.height = 50,
+    this.domesticPrices = const [],
+    this.internationalPrices = const [],
+    this.isLoading = false,
+    this.height = 90,
   });
 
   @override
@@ -427,35 +437,65 @@ class MandiTracker extends StatefulWidget {
 }
 
 class _MandiTrackerState extends State<MandiTracker>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late ScrollController _scrollController;
+    with TickerProviderStateMixin {
+  late AnimationController _domesticController;
+  late AnimationController _intlController;
+  late ScrollController _domesticScrollController;
+  late ScrollController _intlScrollController;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    _controller = AnimationController(
+    _domesticScrollController = ScrollController();
+    _intlScrollController = ScrollController();
+
+    _domesticController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 30),
+      duration: const Duration(seconds: 60),
     )..repeat();
 
-    _controller.addListener(_animateScroll);
+    _intlController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 70),
+    )..repeat();
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+
+    _pulseAnimation =
+        Tween<double>(begin: 0.4, end: 1.0).animate(_pulseController);
+
+    _domesticController.addListener(_animateDomesticScroll);
+    _intlController.addListener(_animateIntlScroll);
   }
 
-  void _animateScroll() {
-    if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final targetScroll = maxScroll * _controller.value;
-      _scrollController.jumpTo(targetScroll);
+  void _animateDomesticScroll() {
+    if (_domesticScrollController.hasClients) {
+      final maxScroll = _domesticScrollController.position.maxScrollExtent;
+      _domesticScrollController.jumpTo(maxScroll * _domesticController.value);
+    }
+  }
+
+  void _animateIntlScroll() {
+    if (_intlScrollController.hasClients) {
+      final maxScroll = _intlScrollController.position.maxScrollExtent;
+      _intlScrollController.jumpTo(maxScroll * _intlController.value);
     }
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_animateScroll);
-    _controller.dispose();
-    _scrollController.dispose();
+    _domesticController.removeListener(_animateDomesticScroll);
+    _intlController.removeListener(_animateIntlScroll);
+    _domesticController.dispose();
+    _intlController.dispose();
+    _pulseController.dispose();
+    _domesticScrollController.dispose();
+    _intlScrollController.dispose();
     super.dispose();
   }
 
@@ -465,34 +505,114 @@ class _MandiTrackerState extends State<MandiTracker>
       height: widget.height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
             KrishiTheme.earthBrown,
-            KrishiTheme.earthBrown.withOpacity(0.9),
+            KrishiTheme.earthBrown.withOpacity(0.85),
           ],
         ),
         borderRadius: BorderRadius.circular(KrishiTheme.radiusSmall),
+        boxShadow: [
+          BoxShadow(
+            color: KrishiTheme.earthBrown.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
+      child: widget.isLoading
+          ? _buildLoadingState()
+          : Column(
+              children: [
+                // Domestic row
+                _buildPriceRow(
+                  label: '🇮🇳 MANDI',
+                  prices: widget.domesticPrices,
+                  scrollController: _domesticScrollController,
+                  labelColor: KrishiTheme.goldenWheat,
+                ),
+                // Thin divider
+                Container(
+                  height: 0.5,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  color: Colors.white24,
+                ),
+                // International row
+                _buildPriceRow(
+                  label: '🌍 GLOBAL',
+                  prices: widget.internationalPrices,
+                  scrollController: _intlScrollController,
+                  labelColor: const Color(0xFF4FC3F7),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(KrishiTheme.goldenWheat),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Fetching live market prices...',
+            style: KrishiTheme.bodySmall.copyWith(
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceRow({
+    required String label,
+    required List<MandiPrice> prices,
+    required ScrollController scrollController,
+    required Color labelColor,
+  }) {
+    return SizedBox(
+      height: (widget.height - 0.5) / 2,
       child: Row(
         children: [
-          // Live indicator
+          // Label with live dot
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            width: 88,
+            padding: const EdgeInsets.only(left: 10),
             child: Row(
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: KrishiTheme.alertRed,
-                    shape: BoxShape.circle,
+                AnimatedBuilder(
+                  animation: _pulseAnimation,
+                  builder: (context, child) => Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: KrishiTheme.alertRed
+                          .withOpacity(_pulseAnimation.value),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  'MANDI',
-                  style: KrishiTheme.labelStyle.copyWith(
-                    color: Colors.white,
-                    fontSize: 11,
+                const SizedBox(width: 5),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: KrishiTheme.labelStyle.copyWith(
+                      color: labelColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -500,16 +620,24 @@ class _MandiTrackerState extends State<MandiTracker>
           ),
           // Scrolling prices
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.prices.length * 3, // Repeat for seamless scroll
-              itemBuilder: (context, index) {
-                final price = widget.prices[index % widget.prices.length];
-                return _buildPriceItem(price);
-              },
-            ),
+            child: prices.isEmpty
+                ? Center(
+                    child: Text(
+                      'No data',
+                      style:
+                          KrishiTheme.bodySmall.copyWith(color: Colors.white38),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: scrollController,
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: prices.length * 3,
+                    itemBuilder: (context, index) {
+                      final price = prices[index % prices.length];
+                      return _buildPriceItem(price);
+                    },
+                  ),
           ),
         ],
       ),
@@ -519,36 +647,51 @@ class _MandiTrackerState extends State<MandiTracker>
   Widget _buildPriceItem(MandiPrice price) {
     final isPositive = price.change >= 0;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             price.crop,
-            style: KrishiTheme.bodyMedium.copyWith(
+            style: KrishiTheme.bodySmall.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w500,
+              fontSize: 11,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Text(
-            '₹${price.price}',
-            style: KrishiTheme.bodyMedium.copyWith(
+            price.displayPrice,
+            style: KrishiTheme.bodySmall.copyWith(
               color: KrishiTheme.goldenWheat,
               fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 3),
           Icon(
             isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
             color: isPositive ? KrishiTheme.freshLime : KrishiTheme.alertRed,
-            size: 20,
+            size: 18,
           ),
           Text(
             '${isPositive ? '+' : ''}${price.change.toStringAsFixed(1)}%',
-            style: KrishiTheme.bodySmall.copyWith(
+            style: TextStyle(
               color: isPositive ? KrishiTheme.freshLime : KrishiTheme.alertRed,
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
             ),
           ),
+          if (price.source != null) ...[
+            const SizedBox(width: 4),
+            Text(
+              '(${price.source})',
+              style: TextStyle(
+                color: Colors.white30,
+                fontSize: 8,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -559,12 +702,26 @@ class MandiPrice {
   final String crop;
   final double price;
   final double change;
+  final String? currency; // ₹ or $
+  final String? source; // Mandi name or exchange
+  final String? market; // Domestic or International
 
   const MandiPrice({
     required this.crop,
     required this.price,
     required this.change,
+    this.currency,
+    this.source,
+    this.market,
   });
+
+  bool get isDomestic => market == null || market == 'Domestic';
+  String get displayPrice {
+    if (currency == '\$') {
+      return '\$${price.toStringAsFixed(2)}';
+    }
+    return '₹${price.toStringAsFixed(1)}';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -578,6 +735,7 @@ class FarmerProfileHeader extends StatelessWidget {
   final String currentLanguage;
   final VoidCallback? onLanguageToggle;
   final VoidCallback? onNotificationTap;
+  final VoidCallback? onMenuTap;
 
   const FarmerProfileHeader({
     super.key,
@@ -587,6 +745,7 @@ class FarmerProfileHeader extends StatelessWidget {
     this.currentLanguage = 'EN',
     this.onLanguageToggle,
     this.onNotificationTap,
+    this.onMenuTap,
   });
 
   @override
@@ -595,6 +754,30 @@ class FarmerProfileHeader extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
+          // Hamburger menu button
+          if (onMenuTap != null) ...[
+            GestureDetector(
+              onTap: () {
+                KrishiTheme.lightHaptic();
+                onMenuTap?.call();
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                ),
+                child: const Icon(
+                  Icons.menu_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
           // Profile avatar with badge
           Stack(
             children: [

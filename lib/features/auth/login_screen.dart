@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydro_smart/features/dashboard/home_screen.dart';
 import 'package:hydro_smart/core/theme/krishi_theme.dart';
 import 'package:hydro_smart/core/theme/warli_painter.dart';
+import 'package:hydro_smart/features/auth/register_screen.dart';
 import 'auth_controller.dart';
 
 // Demo mode provider
@@ -292,7 +293,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
                   ),
                 ),
-                Column(
+                const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
@@ -300,8 +301,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       size: 42,
                       color: KrishiTheme.primaryGreen,
                     ),
-                    const SizedBox(height: 2),
-                    const Text('🌾', style: TextStyle(fontSize: 18)),
+                    SizedBox(height: 2),
+                    Text('🌾', style: TextStyle(fontSize: 18)),
                   ],
                 ),
               ],
@@ -373,7 +374,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         color: KrishiTheme.primaryGreen.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.person_outline_rounded,
                         color: KrishiTheme.primaryGreen,
                         size: 22,
@@ -436,6 +437,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 ),
                 const SizedBox(height: 20),
                 _buildDemoButton(),
+                const SizedBox(height: 20),
+                // Create Account link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _selectedLanguage == 'EN'
+                          ? "Don't have an account? "
+                          : 'खाता नहीं है? ',
+                      style: KrishiTheme.bodySmall.copyWith(
+                          color: KrishiTheme.deepSoil.withOpacity(0.6)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        KrishiTheme.lightHaptic();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const RegisterScreen()),
+                        );
+                      },
+                      child: Text(
+                        _selectedLanguage == 'EN'
+                            ? 'Create Account'
+                            : 'खाता बनाएं',
+                        style: KrishiTheme.bodySmall.copyWith(
+                          color: KrishiTheme.primaryGreen,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 if (authState.hasError) ...[
                   const SizedBox(height: 16),
                   Container(
@@ -446,13 +479,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline,
+                        const Icon(Icons.error_outline,
                             color: KrishiTheme.alertRed, size: 18),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             authState.error.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: KrishiTheme.alertRed, fontSize: 13),
                           ),
                         ),
@@ -512,7 +545,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: KrishiTheme.primaryGreen, width: 2),
+          borderSide:
+              const BorderSide(color: KrishiTheme.primaryGreen, width: 2),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -535,7 +569,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ? Container(
               height: 56,
               alignment: Alignment.center,
-              child: CircularProgressIndicator(
+              child: const CircularProgressIndicator(
                 color: KrishiTheme.primaryGreen,
                 strokeWidth: 2.5,
               ),

@@ -1,0 +1,14 @@
+{
+  "checkInterval": 24,
+  "minVersionSupported": "1.0.0",
+  "updateServerUrl": "https://api.github.com/repos/YOUR_USERNAME/hydro_smart/releases/latest",
+  "forceUpdateVersion": null,
+  "updateMessage": {
+    "title": "Update Available",
+    "description": "A new version of HydroSmart is available with improvements and bug fixes."
+  },
+  "maintenanceMode": {
+    "enabled": false,
+    "message": "HydroSmart is under maintenance. Please check back later."
+  }
+}

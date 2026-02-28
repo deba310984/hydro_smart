@@ -9,7 +9,7 @@ class ApiConfig {
   // Format: https://your-service-name-xxxxx.run.app
 
   static const String API_BASE_URL =
-      'https://hydro-smart-backend-xxxxx.run.app/api/v1';
+      'https://hydro-smart-d6bimqbnv86c73af8ci0.onrender.com/api/v1';
 
   // Fallback for local development
   static const String LOCAL_API_URL = 'http://localhost:5000/api/v1';

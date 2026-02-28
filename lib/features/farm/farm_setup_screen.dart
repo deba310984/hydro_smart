@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hydro_smart/core/constants/app_constants.dart';
-import 'package:hydro_smart/core/utils/validators.dart';
 import 'package:hydro_smart/core/services/error_handler.dart';
 import 'package:hydro_smart/data/models/farm_model.dart';
 import 'package:hydro_smart/features/auth/auth_controller.dart';

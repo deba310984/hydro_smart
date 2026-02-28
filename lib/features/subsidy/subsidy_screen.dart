@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import 'subsidy_controller.dart';
 import 'subsidy_model.dart';
+import 'subsidy_detail_page.dart';
 
 class SubsidyScreen extends ConsumerStatefulWidget {
   const SubsidyScreen({Key? key}) : super(key: key);
@@ -82,45 +83,50 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
                     colors: [AppTheme.royalPurple, AppTheme.royalMaroon],
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.royalGold.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.currency_rupee,
-                                color: AppTheme.royalGold, size: 16),
-                            SizedBox(width: 4),
-                            Text(
-                              'Save up to 80% on Your Hydroponics Setup',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 48),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppTheme.royalGold.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.currency_rupee,
+                                  color: AppTheme.royalGold, size: 16),
+                              SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  'Save up to 80% on Your Hydroponics Setup',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Explore government schemes for farmers',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 12,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Explore government schemes for farmers',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -218,7 +224,7 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
           ),
           // Content
           subsidiesAsync.when(
-            loading: () => SliverFillRemaining(
+            loading: () => const SliverFillRemaining(
               child: Center(
                 child: CircularProgressIndicator(
                   color: AppTheme.royalPurple,
@@ -418,7 +424,8 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: selectedSchemeForCalculator,
+                  initialValue: selectedSchemeForCalculator,
+                  isExpanded: true,
                   items: [
                     const DropdownMenuItem(
                       value: null,
@@ -429,6 +436,7 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
                           child: Text(
                             '${scheme.title} (${scheme.subsidyPercentage}%)',
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         )),
                   ],
@@ -608,306 +616,361 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
   Widget _buildSubsidyCard(SubsidyModel subsidy) {
     final isDeadlineSoon = _isDeadlineSoon(subsidy.deadline);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
-      shadowColor: AppTheme.royalPurple.withOpacity(0.2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppTheme.royalGold.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          // Header with ministry badge
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppTheme.royalPurple, AppTheme.royalMaroon],
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        subsidy.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          _buildBadge(
-                            subsidy.ministry.split(' ').sublist(0, 2).join(' '),
-                            Colors.white.withOpacity(0.2),
-                            Colors.white,
-                            Icons.account_balance,
-                          ),
-                          if (isDeadlineSoon)
-                            _buildBadge(
-                              '⏰ Deadline Soon',
-                              Colors.red.withOpacity(0.3),
-                              Colors.white,
-                              Icons.warning,
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Subsidy percentage highlight
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        '${subsidy.subsidyPercentage}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Subsidy',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SubsidyDetailPage(subsidy: subsidy),
           ),
-          // Body
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Description
-                Text(
-                  subsidy.description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        elevation: 4,
+        shadowColor: AppTheme.royalPurple.withOpacity(0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.royalGold.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            // Header with ministry badge
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.royalPurple, AppTheme.royalMaroon],
                 ),
-                const SizedBox(height: 12),
-                // Benefits
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[200]!),
-                  ),
-                  child: Text(
-                    subsidy.benefitsDescription,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[900],
-                    ),
-                  ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
-                const SizedBox(height: 12),
-                // Deadline and Category
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '📅 Deadline: ${subsidy.deadline}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDeadlineSoon ? Colors.red : Colors.grey[600],
-                          fontWeight: isDeadlineSoon
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        subsidy.category,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.blue[900],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Eligibility
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Eligibility',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subsidy.eligibility,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Required Documents
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Required Documents (${subsidy.documentsRequired.length})',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    ...subsidy.documentsRequired.take(3).map((doc) => Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle,
-                                  size: 16, color: Colors.green),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  doc,
-                                  style: TextStyle(
-                                      fontSize: 11, color: Colors.grey[700]),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          subsidy.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                        )),
-                    if (subsidy.documentsRequired.length > 3)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          '+${subsidy.documentsRequired.length - 3} more',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            _buildBadge(
+                              subsidy.ministry
+                                  .split(' ')
+                                  .sublist(0, 2)
+                                  .join(' '),
+                              Colors.white.withOpacity(0.2),
+                              Colors.white,
+                              Icons.account_balance,
+                            ),
+                            if (isDeadlineSoon)
+                              _buildBadge(
+                                '⏰ Deadline Soon',
+                                Colors.red.withOpacity(0.3),
+                                Colors.white,
+                                Icons.warning,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Subsidy percentage highlight
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          '${subsidy.subsidyPercentage}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Subsidy',
                           style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green[700],
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Body
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Description
+                  Text(
+                    subsidy.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
+                  // Benefits
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Text(
+                      subsidy.benefitsDescription,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green[900],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Deadline and Category
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '📅 Deadline: ${subsidy.deadline}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                isDeadlineSoon ? Colors.red : Colors.grey[600],
+                            fontWeight: isDeadlineSoon
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
                       ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Applicable States
-                Wrap(
-                  spacing: 6,
-                  children: [
-                    Text(
-                      '📍 States:',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    ...subsidy.applicableStates
-                        .take(3)
-                        .map((state) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.orange[100],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                state,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.orange[900],
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            )),
-                    if (subsidy.applicableStates.length > 3)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[100],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                         child: Text(
-                          '+${subsidy.applicableStates.length - 3} more',
+                          subsidy.category,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.orange[900],
+                            color: Colors.blue[900],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Eligibility
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Eligibility',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subsidy.eligibility,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Required Documents
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Required Documents (${subsidy.documentsRequired.length})',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      ...subsidy.documentsRequired.take(3).map((doc) => Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.check_circle,
+                                    size: 16, color: Colors.green),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    doc,
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.grey[700]),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                      if (subsidy.documentsRequired.length > 3)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            '+${subsidy.documentsRequired.length - 3} more',
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.green[700],
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Applicable States
+                  Wrap(
+                    spacing: 6,
+                    children: [
+                      Text(
+                        '📍 States:',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      ...subsidy.applicableStates
+                          .take(3)
+                          .map((state) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[100],
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  state,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.orange[900],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              )),
+                      if (subsidy.applicableStates.length > 3)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          child: Text(
+                            '+${subsidy.applicableStates.length - 3} more',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.orange[900],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Action buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _launchUrl(subsidy.officialLink),
-                    icon: const Icon(Icons.open_in_new),
-                    label: const Text('Official Link'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.royalPurple,
-                      side: const BorderSide(color: AppTheme.royalPurple),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+            // Action buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SubsidyDetailPage(subsidy: subsidy),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.visibility, size: 18),
+                      label: const Text('View Details'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.royalPurple,
+                        side: const BorderSide(color: AppTheme.royalPurple),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _showApplyBottomSheet(subsidy),
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Apply Now'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.royalPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SubsidyDetailPage(subsidy: subsidy),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.rocket_launch, size: 18),
+                      label: const Text('Apply Now'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.royalPurple,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            // Tap-to-view hint
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.royalPurple.withOpacity(0.05),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.touch_app, size: 14, color: Colors.grey.shade500),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Tap for full details & application process',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -953,12 +1016,22 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
   }
 
   void _launchUrl(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
+    if (url.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No link available for this scheme')),
+        );
+      }
+      return;
+    }
+    try {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
-      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open link')),
+        );
+      }
     }
   }
 

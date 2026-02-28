@@ -33,7 +33,7 @@ dependencies:
   # Networking
   dio: ^5.4.0
   http: ^1.2.0
-  file_picker: ^5.3.0
+  file_picker: ^10.1.0
 
   # AI & RAG
   google_generative_ai: ^0.4.0
@@ -47,6 +47,16 @@ dependencies:
   connectivity_plus: ^7.0.0
   fl_chart: ^1.1.1
   url_launcher: ^6.2.0
+
+  # Location & Weather
+  geolocator: ^10.1.0
+  permission_handler: ^11.2.0
+
+  # App Update System
+  package_info_plus: ^8.0.0
+  path_provider: ^2.1.2
+  # install_plugin: ^2.1.0  # Commented out due to Android compatibility issues
+  open_filex: ^4.3.4
 
   # UI
   google_fonts: ^6.0.0
@@ -65,4 +75,5 @@ flutter:
   assets:
     - assets/models/
     - assets/labels/
+    - assets/crop_dataset.json
 

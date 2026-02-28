@@ -9,7 +9,8 @@ class GroqRagService {
 
   static const String _baseUrl =
       'https://api.groq.com/openai/v1/chat/completions';
-  static const String _model = 'mixtral-8x7b-32768'; // Fast & free model
+  static const String _model =
+      'llama-3.3-70b-versatile'; // Current recommended model
 
   // Constructor
   GroqRagService({required String groqApiKey}) {
