@@ -42,13 +42,13 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
           ChatMessage(
             id: '0',
             text:
-                'Hi! I\'m your Hydro Smart AI Assistant powered by Google Gemini. Ask me anything about hydroponics, plant care, nutrient management, pest control, profitability, or farming techniques. I have access to a comprehensive knowledge base.',
+                'Hi! I\'m your Hydro Smart AI Assistant. Ask me anything about hydroponics, plant care, nutrient management, pest control, profitability, or farming techniques. I have access to a comprehensive knowledge base.',
             isUser: false,
             timestamp: DateTime.now(),
           ),
         ]);
 
-  /// Send message and get streaming response from Gemini
+  /// Send message and get streaming response from the Groq RAG service
   Future<void> addMessageWithStreaming(String text) async {
     // Add user message
     final userMessage = ChatMessage(

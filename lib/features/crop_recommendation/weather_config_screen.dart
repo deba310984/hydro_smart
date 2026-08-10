@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/weather_providers.dart';
-import 'services/real_weather_service.dart';
-import 'services/hybrid_weather_service.dart';
 
 /// Weather Configuration Screen
 class WeatherConfigScreen extends ConsumerWidget {

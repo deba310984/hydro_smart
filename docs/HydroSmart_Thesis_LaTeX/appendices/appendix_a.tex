@@ -1,0 +1,24 @@
+\chapter{API Endpoint Reference}
+\label{app:api}
+
+\section{Flask Endpoints}
+\begin{table}[htbp]
+\centering
+\caption{Flask REST API summary.}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Description} \\
+\midrule
+GET & /health & Health probe \\
+POST & /api/v1/recommendations & Single crop \\
+POST & /api/v1/recommendations/multiple & Ranked list \\
+POST & /api/v1/recommendations/evaluate & Score named crop \\
+GET & /api/v1/crops & Catalog \\
+POST & /api/v1/upload-crop-pdf & PDF ingestion \\
+GET & /api/app/version & Update check \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{FastAPI ML Endpoints}
+POST \texttt{/predict}, POST \texttt{/predict/top}, GET \texttt{/health}, GET \texttt{/crops}, GET \texttt{/locations}.

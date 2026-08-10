@@ -21,7 +21,7 @@ class AIChatScreen extends ConsumerWidget {
                 color: AppTheme.royalGold.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.smart_toy_rounded,
+              child: const Icon(Icons.smart_toy_rounded,
                   size: 20, color: AppTheme.royalGold),
             ),
             const SizedBox(width: 10),
@@ -33,7 +33,7 @@ class AIChatScreen extends ConsumerWidget {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [AppTheme.lotusWhite, Colors.white],
             begin: Alignment.topCenter,
@@ -118,14 +118,14 @@ class AIChatScreen extends ConsumerWidget {
                 color: AppTheme.royalPurple.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.chat_bubble_outline_rounded,
                 size: 48,
                 color: AppTheme.royalPurple,
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Your Royal AI Assistant',
               style: TextStyle(
                 fontSize: 20,
@@ -178,7 +178,7 @@ class _QuickActionChip extends StatelessWidget {
               BoxShadow(
                 color: AppTheme.royalPurple.withOpacity(0.05),
                 blurRadius: 8,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -189,7 +189,7 @@ class _QuickActionChip extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: AppTheme.royalPurple,
@@ -230,12 +230,12 @@ class _ChatBubble extends StatelessWidget {
                   BoxShadow(
                     color: AppTheme.royalPurple.withOpacity(0.2),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child:
-                  Icon(Icons.smart_toy_rounded, color: Colors.white, size: 20),
+                  const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 10),
           ],
@@ -255,8 +255,8 @@ class _ChatBubble extends StatelessWidget {
                     : null,
                 color: isUser ? null : Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
                   bottomLeft: Radius.circular(isUser ? 18 : 4),
                   bottomRight: Radius.circular(isUser ? 4 : 18),
                 ),
@@ -265,7 +265,7 @@ class _ChatBubble extends StatelessWidget {
                     color: (isUser ? AppTheme.royalPurple : Colors.grey)
                         .withOpacity(0.15),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
                 border: isUser
@@ -324,11 +324,11 @@ class _ChatBubble extends StatelessWidget {
                   BoxShadow(
                     color: AppTheme.royalGold.withOpacity(0.3),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: Icon(Icons.person, color: AppTheme.royalPurple, size: 20),
+              child: const Icon(Icons.person, color: AppTheme.royalPurple, size: 20),
             ),
           ],
         ],
@@ -378,7 +378,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
           BoxShadow(
             color: AppTheme.royalPurple.withOpacity(0.08),
             blurRadius: 12,
-            offset: Offset(0, -4),
+            offset: const Offset(0, -4),
           ),
         ],
       ),
@@ -392,7 +392,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: 'Ask your farming question...',
-                  prefixIcon: Icon(Icons.chat_bubble_outline,
+                  prefixIcon: const Icon(Icons.chat_bubble_outline,
                       color: AppTheme.royalPurple),
                   filled: true,
                   fillColor: AppTheme.lotusWhite,
@@ -403,7 +403,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide:
-                        BorderSide(color: AppTheme.royalPurple, width: 2),
+                        const BorderSide(color: AppTheme.royalPurple, width: 2),
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -420,14 +420,14 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                   BoxShadow(
                     color: AppTheme.royalPurple.withOpacity(0.3),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: IconButton(
                 onPressed: _isLoading ? null : _sendMessage,
                 icon: _isLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
@@ -435,7 +435,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                           color: Colors.white70,
                         ),
                       )
-                    : Icon(Icons.send_rounded, color: Colors.white),
+                    : const Icon(Icons.send_rounded, color: Colors.white),
               ),
             ),
           ],

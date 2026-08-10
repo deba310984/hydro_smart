@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 /// Real-time market price service for domestic (Indian Mandi) and
 /// international commodity prices using free public APIs.
@@ -8,6 +9,7 @@ class MarketPriceService {
   static final Dio _dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
+    validateStatus: (status) => status != null && status < 500,
   ));
 
   // ─── Domestic Mandi Prices ───────────────────────────────────
@@ -22,15 +24,14 @@ class MarketPriceService {
       final prices = await _fetchFromDataGovIn();
       if (prices.isNotEmpty) return prices;
     } catch (e) {
-      print('[Market] data.gov.in fetch failed: $e');
+      debugPrint('[Market] data.gov.in unavailable, using fallback ($e)');
     }
 
     try {
-      // Fallback: NAPMC/eNAM-style endpoint with real-ish commodity data
       final prices = await _fetchFromNapmcFallback();
       if (prices.isNotEmpty) return prices;
     } catch (e) {
-      print('[Market] NAPMC fallback failed: $e');
+      debugPrint('[Market] NAPMC fallback unavailable ($e)');
     }
 
     // Final fallback: curated realistic prices (updated periodically)
@@ -50,33 +51,47 @@ class MarketPriceService {
       },
     );
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      final records = data['records'] as List? ?? [];
+    return _parseDomesticRecords(response, perQuintalDivisor: 100);
+  }
 
-      final Map<String, MarketPrice> uniqueCrops = {};
-      for (final r in records) {
-        final commodity = (r['commodity'] ?? '').toString().trim();
-        final modal =
-            double.tryParse((r['modal_price'] ?? '0').toString()) ?? 0;
-        if (commodity.isNotEmpty &&
-            modal > 0 &&
-            !uniqueCrops.containsKey(commodity)) {
-          uniqueCrops[commodity] = MarketPrice(
-            commodity: _capitalizeCrop(commodity),
-            price: modal / 100, // Convert from per quintal to per kg
-            currency: '₹',
-            change: _simulateChange(commodity.hashCode),
-            unit: '/kg',
-            market: 'Domestic',
-            source: r['market'] ?? 'Mandi',
-          );
-        }
-        if (uniqueCrops.length >= 10) break;
+  static List<MarketPrice> _parseDomesticRecords(
+    Response<dynamic> response, {
+    required double perQuintalDivisor,
+  }) {
+    if (response.statusCode != 200) return [];
+
+    final data = response.data;
+    if (data is! Map) return [];
+
+    final records = data['records'] as List? ?? [];
+    final Map<String, MarketPrice> uniqueCrops = {};
+
+    for (final r in records) {
+      if (r is! Map) continue;
+      final commodity = (r['commodity'] ?? r['Commodity'] ?? '').toString().trim();
+      final modal =
+          double.tryParse((r['modal_price'] ?? r['Modal Price'] ?? '0').toString()) ??
+              0;
+      if (commodity.isEmpty || modal <= 0 || uniqueCrops.containsKey(commodity)) {
+        continue;
       }
-      return uniqueCrops.values.toList();
+
+      final normalizedPrice =
+          modal > 500 ? modal / perQuintalDivisor : modal / (perQuintalDivisor > 1 ? perQuintalDivisor : 1);
+
+      uniqueCrops[commodity] = MarketPrice(
+        commodity: _capitalizeCrop(commodity),
+        price: normalizedPrice,
+        currency: '₹',
+        change: _simulateChange(commodity.hashCode),
+        unit: '/kg',
+        market: 'Domestic',
+        source: (r['market'] ?? 'Mandi').toString(),
+      );
+      if (uniqueCrops.length >= 10) break;
     }
-    return [];
+
+    return uniqueCrops.values.toList();
   }
 
   /// Fallback NAPMC-style data
@@ -91,35 +106,7 @@ class MarketPriceService {
       },
     );
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      final records = data['records'] as List? ?? [];
-      final Map<String, MarketPrice> uniqueCrops = {};
-
-      for (final r in records) {
-        final commodity =
-            (r['commodity'] ?? r['Commodity'] ?? '').toString().trim();
-        final priceStr =
-            (r['modal_price'] ?? r['Modal Price'] ?? '0').toString();
-        final modal = double.tryParse(priceStr) ?? 0;
-        if (commodity.isNotEmpty &&
-            modal > 0 &&
-            !uniqueCrops.containsKey(commodity)) {
-          uniqueCrops[commodity] = MarketPrice(
-            commodity: _capitalizeCrop(commodity),
-            price: modal > 500 ? modal / 100 : modal, // Normalize
-            currency: '₹',
-            change: _simulateChange(commodity.hashCode),
-            unit: '/kg',
-            market: 'Domestic',
-            source: 'Mandi',
-          );
-        }
-        if (uniqueCrops.length >= 10) break;
-      }
-      return uniqueCrops.values.toList();
-    }
-    return [];
+    return _parseDomesticRecords(response, perQuintalDivisor: 100);
   }
 
   // ─── International Commodity Prices ──────────────────────────
@@ -132,7 +119,7 @@ class MarketPriceService {
       final prices = await _fetchCommodityPrices();
       if (prices.isNotEmpty) return prices;
     } catch (e) {
-      print('[Market] International commodity fetch failed: $e');
+      debugPrint('[Market] International commodity unavailable ($e)');
     }
 
     // Fallback: curated realistic international prices

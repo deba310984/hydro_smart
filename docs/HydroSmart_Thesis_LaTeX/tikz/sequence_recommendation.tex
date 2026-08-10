@@ -1,0 +1,25 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small,
+  msg/.style={-{Stealth}, thick},
+  lifeline/.style={dashed, gray}]
+\node (u) at (0,0) {User};
+\node (ui) at (2.5,0) {UI};
+\node (rp) at (5,0) {Repository};
+\node (api) at (7.8,0) {Flask API};
+\node (eng) at (10.5,0) {Engine};
+
+\foreach \x in {0,2.5,5,7.8,10.5} {
+  \draw[lifeline] (\x,0) -- (\x,-5.5);
+}
+\draw[msg] (0,-0.8) -- node[above]{input} (2.5,-0.8);
+\draw[msg] (2.5,-1.6) -- node[above]{request} (5,-1.6);
+\draw[msg] (5,-2.4) -- node[above]{POST} (7.8,-2.4);
+\draw[msg] (7.8,-3.2) -- node[above]{score} (10.5,-3.2);
+\draw[msg] (10.5,-4.0) -- (7.8,-4.0);
+\draw[msg] (7.8,-4.6) -- (5,-4.6);
+\draw[msg] (5,-5.2) -- (2.5,-5.2);
+\end{tikzpicture}
+\caption{Sequence diagram for single-crop recommendation via the Flask rule engine.}
+\label{fig:sequence_recommendation}
+\end{figure}

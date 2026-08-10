@@ -11,6 +11,14 @@ class OnboardingState {
   final List<TutorialStep> steps;
   final bool hasCompletedOnboarding;
   final String currentLanguage;
+  // Whether the persisted "completed" flag has finished loading from
+  // SharedPreferences. Reading hasCompletedOnboarding before this is true
+  // is unreliable - it will still show the default (false), which would
+  // make the tutorial auto-start on every launch even for users who
+  // already completed it. Callers that decide whether to auto-start the
+  // tutorial must wait for statusLoaded before checking
+  // hasCompletedOnboarding.
+  final bool statusLoaded;
 
   const OnboardingState({
     this.isActive = false,
@@ -18,6 +26,7 @@ class OnboardingState {
     this.steps = const [],
     this.hasCompletedOnboarding = false,
     this.currentLanguage = 'EN',
+    this.statusLoaded = false,
   });
 
   TutorialStep? get currentStep =>
@@ -34,6 +43,7 @@ class OnboardingState {
     List<TutorialStep>? steps,
     bool? hasCompletedOnboarding,
     String? currentLanguage,
+    bool? statusLoaded,
   }) {
     return OnboardingState(
       isActive: isActive ?? this.isActive,
@@ -42,6 +52,7 @@ class OnboardingState {
       hasCompletedOnboarding:
           hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       currentLanguage: currentLanguage ?? this.currentLanguage,
+      statusLoaded: statusLoaded ?? this.statusLoaded,
     );
   }
 }
@@ -57,7 +68,10 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
   Future<void> _loadOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final completed = prefs.getBool(_onboardingCompletedKey) ?? false;
-    state = state.copyWith(hasCompletedOnboarding: completed);
+    state = state.copyWith(
+      hasCompletedOnboarding: completed,
+      statusLoaded: true,
+    );
   }
 
   /// Start the onboarding tutorial

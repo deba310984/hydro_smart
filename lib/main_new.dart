@@ -24,7 +24,7 @@ Future<void> main() async {
         debugPrint('Failed to set FirebaseAuth persistence: $e');
       }
     }
-  } catch (e, st) {
+  } catch (e) {
     // If Firebase fails to initialize, show an error screen immediately
     runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -37,10 +37,10 @@ Future<void> main() async {
               children: [
                 Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Firebase initialization failed',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),

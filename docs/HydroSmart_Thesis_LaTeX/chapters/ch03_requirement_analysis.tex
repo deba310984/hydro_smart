@@ -1,0 +1,80 @@
+\chapter{Requirement Analysis}
+\label{ch:requirements}
+
+\section{Introduction}
+This chapter formalizes stakeholder expectations as verifiable requirements. The analysis follows IEEE~830 conventions adapted for agile delivery.
+
+\section{Stakeholder Analysis}
+Primary stakeholders include: (i)~hydroponic farmers, (ii)~agri-entrepreneurs, (iii)~system administrators, (iv)~project supervisors, and (v)~cloud service providers. Farmers demand low-latency recommendations and bilingual clarity. Administrators curate knowledge-base documents and API keys.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small,
+  stake/.style={ellipse, draw, fill=orange!10, minimum width=2.2cm, align=center}]
+\node[stake] (farmer) at (0,0) {Farmer};
+\node[stake] (admin) at (4,0) {Administrator};
+\node[stake] (cloud) at (2,-2) {Cloud Provider};
+\node[stake] (super) at (2,2) {Supervisor};
+\draw[-{Stealth}] (farmer) -- node[above, sloped, font=\scriptsize]{uses} (super);
+\draw[-{Stealth}] (admin) -- node[right, font=\scriptsize]{configures} (cloud);
+\draw[-{Stealth}] (farmer) -- node[right, font=\scriptsize]{data} (cloud);
+\end{tikzpicture}
+\caption{Stakeholder interaction diagram illustrating dependency relationships among end users, administrators, academic supervisors, and external cloud services.}
+\label{fig:stakeholder_diagram}
+\end{figure}
+
+\section{Functional Requirements}
+\label{sec:fr}
+\begin{longtable}{@{}clp{8.5cm}@{}}
+\caption{Functional requirements specification for \HydroSmart{}.}
+\label{tab:functional_requirements}\\
+\toprule
+\textbf{ID} & \textbf{Priority} & \textbf{Requirement Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Priority} & \textbf{Requirement Description} \\
+\midrule
+\endhead
+FR-01 & High & The system shall register users via email and password using Firebase Authentication. \\
+FR-02 & High & The system shall persist user profiles in Cloud Firestore. \\
+FR-03 & High & The system shall display real-time sensor readings from Firebase RTDB. \\
+FR-04 & High & The system shall recommend crops given temperature, humidity, and pH. \\
+FR-05 & Medium & The system shall invoke ML inference with location and month. \\
+FR-06 & Medium & The system shall provide RAG-grounded chat responses. \\
+FR-07 & Medium & The system shall track monthly farm expenses and revenue. \\
+FR-08 & Low & The system shall display mandi prices with offline fallback. \\
+FR-09 & Low & The system shall browse government subsidy schemes. \\
+FR-10 & Medium & The system shall check for application updates from backend. \\
+\bottomrule
+\end{longtable}
+
+\section{Non-Functional Requirements}
+\begin{table}[htbp]
+\centering
+\caption{Non-functional requirements and measurable acceptance thresholds.}
+\label{tab:nfr}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Criterion} \\
+\midrule
+NFR-01 & Performance & Dashboard render $<$ 3\,s on mid-tier Android \\
+NFR-02 & Availability & Core UI navigable offline with cached crop JSON \\
+NFR-03 & Security & TLS for all REST calls; Firebase rules enforced \\
+NFR-04 & Usability & Bilingual strings on primary dashboard \\
+NFR-05 & Maintainability & Feature modules decoupled via Riverpod \\
+NFR-06 & Scalability & ML service horizontally scalable on Render \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Feasibility Study}
+\textbf{Technical feasibility} is established through Flutter cross-platform tooling, mature Firebase SDKs, and scikit-learn training on commodity hardware. \textbf{Economic feasibility} leverages free-tier Firebase and Render for academic prototypes. \textbf{Operational feasibility} depends on farmer smartphone penetration and intermittent LTE connectivity; offline fallbacks mitigate risk.
+
+\input{tikz/use_case_diagram}
+
+\section{Use Case Analysis}
+The use case diagram in \Cref{fig:use_case_diagram} captures authentication, sensing, recommendation, advisory chat, finance, and subsidy browsing. Each use case maps to FR identifiers in \Cref{tab:functional_requirements}.
+
+\section{Chapter Summary}
+Requirements trace forward to design models in \Cref{ch:design}.

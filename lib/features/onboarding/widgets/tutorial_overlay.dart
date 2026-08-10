@@ -267,31 +267,37 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   Widget _buildTargetArrow() {
     if (_targetRect == null) return const SizedBox();
 
+    // IgnorePointer: this is a purely decorative indicator. Without it, the
+    // arrow's hit-testable bounds can land on top of the speech bubble's
+    // Next/Finish button (e.g. when the target sits near the bottom of the
+    // screen) and silently swallow taps meant for that button.
     return Positioned(
       top: _targetRect!.center.dy - 30,
       left: _targetRect!.center.dx - 15,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: 10),
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.easeInOut,
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, value),
-              child: child,
-            );
-          },
-          onEnd: () {},
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.arrow_downward,
-                color: widget.step.highlightColor ?? Colors.amber,
-                size: 30,
-              ),
-            ],
+      child: IgnorePointer(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 10),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, value),
+                child: child,
+              );
+            },
+            onEnd: () {},
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.arrow_downward,
+                  color: widget.step.highlightColor ?? Colors.amber,
+                  size: 30,
+                ),
+              ],
+            ),
           ),
         ),
       ),

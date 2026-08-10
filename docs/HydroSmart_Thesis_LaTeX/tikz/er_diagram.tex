@@ -1,0 +1,20 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  entity/.style={rectangle, draw, fill=blue!6, minimum width=2.4cm, minimum height=0.9cm, align=center, font=\small},
+  rel/.style={-{Stealth}, thick}
+]
+\node[entity] (user) {USER};
+\node[entity, right=3.2cm of user] (farm) {FARM};
+\node[entity, below=1.6cm of user] (finance) {FINANCE\_MONTHLY};
+\node[entity, below=1.6cm of farm] (crop) {CROP};
+\node[entity, right=3.2cm of farm] (kb) {AI\_KNOWLEDGE};
+\node[entity, below=1.6cm of kb] (config) {CONFIG};
+
+\draw[rel] (user) -- node[above, font=\scriptsize]{owns 1:N} (farm);
+\draw[rel] (user) -- node[left, font=\scriptsize]{has 1:1} (finance);
+\draw[rel] (kb) -- node[above, font=\scriptsize]{supports} (config);
+\end{tikzpicture}
+\caption{Entity--relationship diagram for primary Cloud Firestore collections and their cardinalities.}
+\label{fig:er_diagram}
+\end{figure}

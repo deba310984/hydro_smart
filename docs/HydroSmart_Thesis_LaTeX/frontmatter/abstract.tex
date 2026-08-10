@@ -1,0 +1,13 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{empty}
+\noindent Controlled-environment agriculture, particularly hydroponics, demands continuous alignment between micro-climatic parameters and crop physiology. Existing digital tools rarely integrate sensing, agronomic recommendation, economic planning, and natural-language advisory within a single mobile experience tailored to Indian agro-climatic diversity. This thesis presents \textbf{HydroSmart}, an intelligent farm management platform comprising a Flutter client, a rule-based Flask recommendation service, a FastAPI Random Forest inference microservice, and Google Firebase cloud services.
+
+\vspace{0.3cm}
+\noindent The system implements a hybrid decision paradigm: a multi-criteria heuristic engine scores crops using temperature, humidity, pH, state, and season; a Random Forest classifier provides probabilistic predictions with cyclical month encoding; and a retrieval-augmented generation pipeline grounds Gemini responses in a Firestore-hosted knowledge base. Real-time sensor telemetry is ingested through Firebase Realtime Database, while user profiles, farms, and financial records persist in Cloud Firestore.
+
+\vspace{0.3cm}
+\noindent Functional validation on Android emulators confirms authentication, dashboard navigation, recommendation workflows, and graceful degradation under third-party API rate limits. Cross-validation during model training indicates classification accuracy exceeding 85\% on synthetic and IoT-augmented datasets. The thesis contributes an academically reproducible architecture suitable for smart agriculture curricula, IEEE-track dissemination, and future extensions in edge inference and autonomous nutrient control.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} Hydroponics, precision agriculture, mobile computing, Random Forest, retrieval-augmented generation, Firebase, Flutter, decision support system, Internet of Things.

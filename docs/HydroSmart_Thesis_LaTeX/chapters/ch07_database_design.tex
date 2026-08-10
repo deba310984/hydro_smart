@@ -1,0 +1,47 @@
+\chapter{Database Design}
+\label{ch:database}
+
+\section{Introduction}
+\HydroSmart{} employs a polyglot persistence strategy: Cloud Firestore for document-oriented profiles and finance, Firebase Realtime Database for high-frequency sensor streams, and local JSON assets for offline crop catalogs.
+
+\input{tikz/er_diagram}
+
+\section{Firestore Collections}
+\subsection{Users}
+Path: \texttt{users/\{uid\}}. Fields: \texttt{name}, \texttt{phone}, \texttt{state}, \texttt{language}, \texttt{accountType}, \texttt{kisanId}, timestamps.
+
+\subsection{Farms}
+Collection \texttt{farms}: \texttt{ownerId}, \texttt{name}, \texttt{areaSqm}, geolocation optional.
+
+\subsection{Finance}
+Sub-collection \texttt{users/\{uid\}/finance/monthly}: expense line items, \texttt{estimatedRevenue}, \texttt{lastUpdated}.
+
+\subsection{Knowledge Base}
+\texttt{ai\_knowledge\_base}: \texttt{content}, \texttt{keywords}, optional \texttt{title}.
+
+\section{Realtime Database}
+Sensor path \texttt{devices/\{deviceId\}/sensors/\{sensorId\}} stores \texttt{temperature}, \texttt{humidity}, \texttt{ph}, \texttt{timestamp}.
+
+\section{Data Dictionary}
+\begin{table}[htbp]
+\centering
+\caption{Excerpt of logical data dictionary for finance documents.}
+\label{tab:data_dictionary}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Unit} & \textbf{Description} \\
+\midrule
+electricityCost & number & INR & Monthly electricity expense \\
+nutrientCost & number & INR & Nutrient solution cost \\
+waterCost & number & INR & Water consumption cost \\
+laborCost & number & INR & Labor allocation \\
+estimatedRevenue & number & INR & Projected sales \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{CRUD Mapping}
+Create operations dominate registration and farm setup; reads use snapshot streams; updates modify finance fields; deletes soft-delete crops in backend Firestore (\texttt{active:false}).
+
+\section{Chapter Summary}
+Verification of data integrity appears in \Cref{ch:testing}.

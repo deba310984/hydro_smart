@@ -49,6 +49,10 @@ class FinanceData {
   final DateTime lastUpdated;
   final bool isOrganic; // Affects GST calculation
 
+  // Custom Tax Rates
+  final double
+      customOtherGSTRate; // Custom GST rate for other purchases (default 18%)
+
   // Calculated Getters
   double get totalOperatingExpense =>
       electricityCost +
@@ -114,6 +118,7 @@ class FinanceData {
     this.currentSavings = 0,
     required this.lastUpdated,
     this.isOrganic = false,
+    this.customOtherGSTRate = 18.0, // Default 18% GST
   });
 
   // Convert to JSON for Firestore
@@ -151,6 +156,7 @@ class FinanceData {
       'currentSavings': currentSavings,
       'lastUpdated': lastUpdated.toIso8601String(),
       'isOrganic': isOrganic,
+      'customOtherGSTRate': customOtherGSTRate,
     };
   }
 
@@ -192,6 +198,7 @@ class FinanceData {
           ? DateTime.parse(json['lastUpdated'])
           : DateTime.now(),
       isOrganic: json['isOrganic'] ?? false,
+      customOtherGSTRate: (json['customOtherGSTRate'] ?? 18.0).toDouble(),
     );
   }
 
@@ -229,6 +236,7 @@ class FinanceData {
     double? currentSavings,
     DateTime? lastUpdated,
     bool? isOrganic,
+    double? customOtherGSTRate,
   }) {
     return FinanceData(
       userId: userId ?? this.userId,
@@ -264,6 +272,7 @@ class FinanceData {
       currentSavings: currentSavings ?? this.currentSavings,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       isOrganic: isOrganic ?? this.isOrganic,
+      customOtherGSTRate: customOtherGSTRate ?? this.customOtherGSTRate,
     );
   }
 }

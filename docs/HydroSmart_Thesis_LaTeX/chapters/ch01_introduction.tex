@@ -1,0 +1,97 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background}
+\label{sec:background}
+
+Agriculture remains a cornerstone of economic stability in developing economies, yet the sector confronts accelerating pressure from population growth, climate variability, and resource scarcity. Within this landscape, \emph{hydroponics}---soilless cultivation wherein plant roots interact directly with nutrient-enriched water---has emerged as a commercially viable modality for urban and peri-urban food production. Unlike open-field farming, hydroponic systems expose cultivators to a high-dimensional control problem: temperature, relative humidity, pH, electrical conductivity (EC), dissolved oxygen, photoperiod, and cultivar-specific nutrient recipes must be coordinated to avoid crop failure.
+
+Digital transformation initiatives in agriculture have historically emphasized macro-scale field monitoring through satellite imagery and coarse weather forecasts. Such approaches inadequately address the \textbf{closed-loop} requirements of controlled-environment agriculture (CEA), wherein decisions must be executed at hourly or daily granularity based on locally measured micro-climate signals. Concurrent advances in affordable Internet of Things (IoT) sensing, cloud-native mobile platforms, and machine learning (ML) classification have created an opportunity to democratize precision agriculture for small and medium hydroponic enterprises.
+
+The present work investigates the design, implementation, and empirical evaluation of \HydroSmart, a unified mobile-centric platform that integrates (i)~real-time sensor ingestion, (ii)~hybrid crop recommendation, (iii)~retrieval-augmented generative advisory, (iv)~financial planning, and (v)~policy-awareness modules within a single user experience. The system is architected for the Indian agro-climatic context, wherein state-level climate zones and monsoon-driven seasonality materially influence cultivar suitability.
+
+\section{Problem Statement}
+\label{sec:problem}
+
+Despite the proliferation of agricultural mobile applications, hydroponic operators routinely encounter the following systemic deficiencies:
+
+\begin{enumerate}
+  \item \textbf{Fragmented decision support.} Environmental dashboards, market price portals, and informal messaging channels operate in isolation, forcing farmers to mentally integrate incompatible data sources under time pressure.
+  \item \textbf{Limited hydroponic specificity.} Mainstream farm management software optimizes for open-field crops and cannot natively reason about NFT, deep water culture (DWC), or nutrient-film parameter envelopes.
+  \item \textbf{Inaccessible machine learning.} Published crop classification models rarely ship with farmer-facing interfaces, bilingual explanations, or uncertainty quantification understandable to non-specialists.
+  \item \textbf{Weak grounding of conversational AI.} General-purpose large language models (LLMs) may hallucinate agronomic guidance absent retrieval from curated, domain-vetted knowledge corpora.
+  \item \textbf{Financial opacity.} Unit economics of electricity, nutrients, labor, and expected yield are seldom co-located with agronomic recommendations, hindering investment decisions.
+\end{enumerate}
+
+The central problem addressed by this thesis may therefore be formalized as follows: \emph{How can a mobile software architecture reliably transform heterogeneous hydroponic sensor readings, user context, and regional seasonality into actionable, explainable, and economically informed cultivation guidance while remaining deployable on commodity smartphones under intermittent connectivity?}
+
+\section{Need for the Study}
+\label{sec:need}
+
+The need for this study arises at the intersection of academic, industrial, and social imperatives. Academically, undergraduate engineering programs require capstone artifacts that demonstrate end-to-end systems thinking---from requirements engineering through validation---rather than isolated algorithmic prototypes. Industrially, the hydroponics market exhibits double-digit compound growth in metropolitan India, yet digital tooling maturity lags behind greenhouse automation hardware. Socially, empowering first-generation agri-entrepreneurs with credible decision support may reduce crop failure rates and improve household income stability.
+
+Furthermore, post-pandemic policy emphasis on food security and rural digital infrastructure (e.g., digital public goods, open government datasets) creates a fertile environment for systems that consume public mandi price APIs and subsidy registries. A rigorous study documenting integration patterns, failure modes (rate limiting, cold-start latency), and security trade-offs therefore possesses contemporary relevance.
+
+\section{Objectives}
+\label{sec:objectives}
+
+The primary and secondary objectives of this research are:
+
+\begin{itemize}
+  \item \textbf{O1.} To design a scalable client--server architecture that couples a Flutter mobile client with Firebase cloud services and Python-based recommendation microservices.
+  \item \textbf{O2.} To implement a hybrid crop recommendation paradigm combining multi-criteria heuristic scoring and Random Forest classification with cyclical temporal encoding.
+  \item \textbf{O3.} To develop a retrieval-augmented generation (RAG) chatbot grounded in a Firestore-hosted knowledge base and Google Gemini inference.
+  \item \textbf{O4.} To integrate real-time sensor telemetry through Firebase Realtime Database and visualize anomalies on a unified dashboard.
+  \item \textbf{O5.} To embed financial, market-price, and government subsidy modules that contextualize agronomic decisions within economic reality.
+  \item \textbf{O6.} To validate functional correctness, model accuracy, and usability through structured testing and emulator-based deployment evidence.
+\end{itemize}
+
+\section{Scope}
+\label{sec:scope}
+
+The scope of this thesis encompasses the software realization of \HydroSmart{} version 1.0.0 as maintained in the project repository. Included components are: the Flutter application (Android primary target), Flask rule-based API, FastAPI ML inference service, Firebase integration, and on-device TensorFlow Lite disease detection prototype. Excluded from scope are: large-scale field trials across multiple agro-climatic zones, hardware design of custom IoT sensor nodes, regulatory certification of agricultural inputs, and production hardening of secrets management beyond architectural recommendations.
+
+Geographically, evaluation emphasizes Indian state--season mappings embedded in the recommendation engine. Linguistically, the user interface supports English and Hindi string toggles on selected screens. The ML classifier is trained on synthetic distributions shaped by domain knowledge and optional IoT CSV feeds rather than exclusively on multi-year field experiments.
+
+\section{Contributions}
+\label{sec:contributions}
+
+This thesis makes the following explicit contributions:
+
+\begin{enumerate}
+  \item A \textbf{reference architecture} for hybrid cloud-mobile hydroponic management integrating Firebase, Flask, and FastAPI with documented API contracts.
+  \item A \textbf{reproducible Random Forest pipeline} with engineered features ($\sin$, $\cos$ month encoding, temperature--humidity interaction) achieving greater than 85\% cross-validated accuracy on the project dataset.
+  \item A \textbf{lightweight RAG design} avoiding vector-database infrastructure while maintaining domain grounding via keyword-indexed Firestore documents.
+  \item An \textbf{open-source implementation} suitable for classroom replication, including test suites, deployment manifests, and LaTeX thesis artifacts.
+\end{enumerate}
+
+\section{Research Questions}
+\label{sec:research_questions}
+
+\begin{enumerate}
+  \item[RQ1.] To what extent does a hybrid heuristic--ML recommender improve perceived recommendation quality compared with heuristic-only baselines?
+  \item[RQ2.] How reliably can Firebase Realtime Database deliver sub-three-second sensor visibility on mid-tier Android emulators?
+  \item[RQ3.] Does retrieval-augmented prompting measurably reduce irrelevant content in agronomic chat responses versus zero-shot LLM prompting?
+  \item[RQ4.] What are the dominant latency and availability bottlenecks when deploying ML inference on free-tier cloud hosting?
+\end{enumerate}
+
+\section{Thesis Organization}
+\label{sec:organization}
+
+The remainder of this document is organized as follows. \Cref{ch:literature} surveys scholarly and industrial literature on precision agriculture, crop recommender systems, ensemble learning, and retrieval-augmented generation. \Cref{ch:requirements} articulates functional and non-functional requirements, feasibility, and use-case models. \Cref{ch:design} presents system architecture and UML-style models realized in TikZ. \Cref{ch:implementation} describes module-level implementation across Flutter, Firebase, Flask, FastAPI, and Gemini. \Cref{ch:algorithms} formalizes algorithms, pseudocode, and complexity. \Cref{ch:database} documents persistence schemas. \Cref{ch:testing} reports verification and validation. \Cref{ch:results} discusses empirical outcomes. \Cref{ch:conclusion} concludes with limitations and future research. Appendices provide supplementary API listings; an IEEE-format conference paper is included as a standalone compilable project under \texttt{ieee/}.
+
+% Expand background for page depth (academic continuation)
+\section{Motivation for Hybrid Recommendation}
+\label{sec:motivation_hybrid}
+
+Pure machine learning approaches risk overfitting when training data under-represent rare cultivars or extreme weather events. Conversely, pure rule engines struggle to capture nonlinear interactions between temperature and humidity across months. The hybrid design adopted in \HydroSmart{} therefore reflects a pragmatic bias--variance trade-off: heuristics supply interpretable baselines and offline resilience via \texttt{crop\_dataset.json}, whereas Random Forest supplies data-driven corrections when the inference endpoint is reachable.
+
+\section{Indian Agro-Climatic Context}
+\label{sec:indian_context}
+
+India spans multiple Köppen--Geiger climate classes; the Flask \texttt{CropRecommendationEngine} encodes state-to-zone mappings and season calendars (rabi, kharif, zaid) to modulate scoring penalties. This contextualization distinguishes the platform from Western-centric greenhouse software that assumes heating-dominated winters. Future extensions may incorporate IPCC-downscaled climate projections; such integration is flagged in \Cref{ch:conclusion}.
+
+\section{Ethical Considerations}
+\label{sec:ethics}
+
+Deployment of conversational AI in agriculture carries ethical weight: incorrect nutrient guidance can destroy entire batches. The thesis therefore advocates retrieval grounding, visible confidence scores on ML predictions, and administrative curation of knowledge-base documents. Data privacy considerations for farmer profiles and financial records are analyzed in \Cref{ch:design} and \Cref{ch:testing}.

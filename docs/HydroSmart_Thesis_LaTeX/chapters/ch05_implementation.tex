@@ -1,0 +1,64 @@
+\chapter{Implementation}
+\label{ch:implementation}
+
+\section{Introduction}
+This chapter narrates the realization of design artifacts in production-oriented source code. Implementation choices emphasize readability, modularity, and alignment with Flutter and Python community conventions.
+
+\section{Flutter Client Architecture}
+The client employs \texttt{MaterialApp} gated by \texttt{ProviderScope}. Startup sequence: \texttt{WidgetsFlutterBinding.ensureInitialized()}, Firebase initialization, splash screen (four-second animated progress), \texttt{authStateProvider} resolution, and routing to \texttt{HomeScreen} or \texttt{LoginScreen}.
+
+\subsection{Riverpod State Management}
+Riverpod providers decouple widgets from data sources. \texttt{StreamProvider} listens to Firebase auth and finance streams; \texttt{StateNotifierProvider} encapsulates update checks and market price refresh timers. Such patterns prevent unnecessary rebuilds of the large \texttt{HomeScreen} widget tree.
+
+\subsection{Feature Modules}
+Each feature under \texttt{lib/features/} owns presentation widgets and feature-specific providers. Cross-cutting recommendation logic remains in \texttt{data/repositories} to enable mock injection during unit tests.
+
+\section{Firebase Integration}
+Firebase Auth provides email/password identity. Cloud Firestore stores \texttt{users}, \texttt{farms}, \texttt{users/\{uid\}/finance/monthly}, and \texttt{ai\_knowledge\_base}. Realtime Database ingests sensor payloads at \texttt{devices/\{deviceId\}/sensors/\{sensorId\}}.
+
+\section{Flask Rule Engine}
+The \texttt{CropRecommendationEngine} maintains in-memory crop agronomic metadata. Scoring penalizes deviation from optimal temperature, humidity, and pH ranges, with additional season and state penalties. Endpoints expose JSON compatible with \texttt{RecommendationModel} deserialization on the client.
+
+\section{FastAPI Machine Learning Service}
+The ML microservice loads \texttt{model.pkl} at startup via FastAPI lifespan hooks. Pydantic validates inference requests; responses include calibrated confidence percentages from \texttt{predict\_proba}.
+
+\section{Gemini RAG Implementation}
+\texttt{GeminiRagService} retrieves up to ten knowledge documents, performs keyword overlap matching, concatenates relevant passages into the prompt, and streams tokens to \texttt{ChatScreen}.
+
+\section{User Interface Evidence}
+The following figures document primary screens. Place screenshot files in \texttt{figures/screenshots/} before final submission.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox[c][5.5cm][c]{0.85\textwidth}{\centering\small\textit{Insert:} \texttt{splash.png}\\[2mm] Animated splash with logo and progress indicator}}
+\caption{Splash screen establishing brand identity and initialization progress during cold start.}
+\label{fig:ui_splash}
+\end{figure}
+\noindent\Cref{fig:ui_splash} demonstrates non-blocking startup branding while Firebase and providers initialize. The four-second progress animation sets user expectations during network-bound operations.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox[c][5.5cm][c]{0.85\textwidth}{\centering\small\textit{Insert:} \texttt{home.png}\\[2mm] Dashboard with mandi strip and feature grid}}
+\caption{Home dashboard aggregating profile header, market prices, sensor summary, and modular feature navigation.}
+\label{fig:ui_home}
+\end{figure}
+\noindent\Cref{fig:ui_home} constitutes the operational hub. Krishi-themed visual language and tutorial \texttt{GlobalKey} anchors support first-time user onboarding documented in implementation guides.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox[c][5.5cm][c]{0.85\textwidth}{\centering\small\textit{Insert:} \texttt{crop\_detail.png}\\[2mm] Crop detail with agronomic ranges}}
+\caption{Crop detail presentation exposing temperature, humidity, pH envelopes, market demand, and harvest horizon.}
+\label{fig:ui_crop_detail}
+\end{figure}
+\noindent\Cref{fig:ui_crop_detail} evidences successful deserialization of backend agronomic fields into human-readable charts, fulfilling FR-04.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox[c][5.5cm][c]{0.85\textwidth}{\centering\small\textit{Insert:} \texttt{chat.png}\\[2mm] AI chat with streaming response}}
+\caption{AI advisory chat interface with retrieval-augmented streaming tokens.}
+\label{fig:ui_chat}
+\end{figure}
+\noindent\Cref{fig:ui_chat} fulfills FR-06. Streaming UX reduces perceived latency relative to batch completion.
+
+\section{Chapter Summary}
+Algorithmic formalization appears in \Cref{ch:algorithms}; persistence schemas in \Cref{ch:database}.

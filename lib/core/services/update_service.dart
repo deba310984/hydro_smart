@@ -19,6 +19,7 @@ class UpdateService {
     BaseOptions(
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(minutes: 5), // For APK downloads
+      validateStatus: (status) => status != null && status < 500,
     ),
   );
 
@@ -36,12 +37,15 @@ class UpdateService {
       );
 
       if (response.statusCode == 200 &&
+          response.data is Map &&
           response.data['updateAvailable'] == true) {
         return AppVersion.fromBackendResponse(response.data);
       }
       return null;
-    } catch (e) {
-      print('Error checking for updates: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      return null;
+    } catch (_) {
       return null;
     }
   }

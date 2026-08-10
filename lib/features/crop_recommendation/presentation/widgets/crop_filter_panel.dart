@@ -5,7 +5,7 @@ class CropFilterPanel extends StatefulWidget {
   final CropFilters currentFilters;
   final Function(CropFilters) onApply;
 
-  const CropFilterPanel({
+  const CropFilterPanel({super.key, 
     required this.currentFilters,
     required this.onApply,
   });
@@ -38,9 +38,9 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
         List.from(widget.currentFilters.hydroponicTechniques ?? []);
     selectedSeasons = List.from(widget.currentFilters.growingSeasons ?? []);
     growthDurationRange =
-        widget.currentFilters.growthDurationRange ?? RangeValues(0, 180);
+        widget.currentFilters.growthDurationRange ?? const RangeValues(0, 180);
     profitMarginRange =
-        widget.currentFilters.profitMarginRange ?? RangeValues(0, 100);
+        widget.currentFilters.profitMarginRange ?? const RangeValues(0, 100);
     selectedDifficulty = widget.currentFilters.difficultyLevel;
     selectedMarketDemand = widget.currentFilters.marketDemandLevel;
   }
@@ -63,8 +63,8 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
     setState(() {
       selectedTechniques.clear();
       selectedSeasons.clear();
-      growthDurationRange = RangeValues(0, 180);
-      profitMarginRange = RangeValues(0, 100);
+      growthDurationRange = const RangeValues(0, 180);
+      profitMarginRange = const RangeValues(0, 100);
       selectedDifficulty = null;
       selectedMarketDemand = null;
     });
@@ -80,12 +80,12 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: SingleChildScrollView(
             controller: scrollController,
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -101,13 +101,13 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                                 ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.close),
+                        icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Hydroponic Technique Filter
                   _buildFilterSection(
@@ -127,7 +127,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Growing Season Filter
                   _buildFilterSection(
@@ -147,7 +147,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Growth Duration Filter
                   _buildFilterSection(
@@ -170,7 +170,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                           },
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             '${growthDurationRange.start.toStringAsFixed(0)} - ${growthDurationRange.end.toStringAsFixed(0)} days',
                             textAlign: TextAlign.center,
@@ -181,7 +181,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Profit Margin Filter
                   _buildFilterSection(
@@ -204,7 +204,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                           },
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             '${profitMarginRange.start.toStringAsFixed(0)}% - ${profitMarginRange.end.toStringAsFixed(0)}%',
                             textAlign: TextAlign.center,
@@ -215,7 +215,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Difficulty Level Filter
                   _buildFilterSection(
@@ -232,7 +232,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Market Demand Filter
                   _buildFilterSection(
@@ -249,7 +249,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                     ),
                   ),
 
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   // Action Buttons
                   Row(
@@ -260,20 +260,20 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[400],
                           ),
-                          child: Text('Clear All'),
+                          child: const Text('Clear All'),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _applyFilters,
-                          child: Text('Apply Filters'),
+                          child: const Text('Apply Filters'),
                         ),
                       ),
                     ],
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -296,7 +296,7 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
                 fontWeight: FontWeight.bold,
               ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         child,
       ],
     );
@@ -349,6 +349,6 @@ class _CropFilterPanelState extends State<CropFilterPanel> {
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

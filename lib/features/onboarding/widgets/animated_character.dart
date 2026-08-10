@@ -155,13 +155,13 @@ class _FarmerCharacterPainter extends CustomPainter {
     final scale = size.width / 120;
 
     // Colors
-    final skinColor = const Color(0xFFD4A574);
-    final skinDark = const Color(0xFFC49464);
-    final hatColor = const Color(0xFF8B4513);
-    final hatBand = const Color(0xFFFFD700);
-    final shirtColor = const Color(0xFF4CAF50);
-    final shirtDark = const Color(0xFF388E3C);
-    final pantsColor = const Color(0xFF5D4037);
+    const skinColor = Color(0xFFD4A574);
+    const skinDark = Color(0xFFC49464);
+    const hatColor = Color(0xFF8B4513);
+    const hatBand = Color(0xFFFFD700);
+    const shirtColor = Color(0xFF4CAF50);
+    const shirtDark = Color(0xFF388E3C);
+    const pantsColor = Color(0xFF5D4037);
 
     // Body (torso)
     final bodyPaint = Paint()

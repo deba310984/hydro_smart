@@ -1,0 +1,79 @@
+\chapter{Algorithms and Mathematical Formulation}
+\label{ch:algorithms}
+
+\section{Introduction}
+This chapter formalizes computational procedures underlying recommendation, classification, retrieval-augmented inference, and sensor monitoring.
+
+\section{Heuristic Crop Recommendation}
+\label{sec:algo_heuristic}
+
+For each crop $c \in \mathcal{C}$, let $s_c$ denote the compatibility score initialized to 100. Penalty functions $P_T$, $P_H$, $P_{\mathrm{pH}}$ subtract proportional deviations from optimal intervals. Season and state mismatches incur fixed penalties $\delta_s$, $\delta_g$.
+
+\begin{algorithm}[htbp]
+\caption{Heuristic Crop Scoring}
+\label{alg:heuristic}
+\begin{algorithmic}[1]
+\Require Environmental vector $(T, H, \mathrm{pH})$, state $g$, month $m$
+\Ensure Top crop $c^\ast$
+\For{each crop $c \in \mathcal{C}$}
+  \State $s_c \gets 100$
+  \State $s_c \gets s_c - P_T(T, c) - P_H(H, c) - P_{\mathrm{pH}}(\mathrm{pH}, c)$
+  \If{$g \notin \text{states}(c)$} \State $s_c \gets s_c - \delta_g$ \EndIf
+  \If{$m \notin \text{months}(c)$} \State $s_c \gets s_c - \delta_s$ \EndIf
+\EndFor
+\State \Return $\arg\max_c s_c$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Complexity:} $O(|\mathcal{C}|)$ per request, suitable for interactive mobile use.
+
+\section{Random Forest Classification}
+\label{sec:algo_rf}
+
+\subsection{Gini Impurity}
+\begin{equation}
+Gini(t) = 1 - \sum_{k=1}^{K} p_k^2(t)
+\label{eq:gini}
+\end{equation}
+
+\subsection{Entropy and Information Gain}
+\begin{equation}
+H(t) = - \sum_{k=1}^{K} p_k(t) \log_2 p_k(t)
+\label{eq:entropy}
+\end{equation}
+\begin{equation}
+IG(t,s) = H(t) - \sum_{v \in \{L,R\}} \frac{|t_v|}{|t|} H(t_v)
+\label{eq:ig}
+\end{equation}
+
+\subsection{Feature Vector}
+\begin{equation}
+\mathbf{x} = [\,T,\; H,\; \text{enc}(g),\; m,\; \sin(2\pi m/12),\; \cos(2\pi m/12),\; TH/100\,]^T
+\label{eq:feature_vector}
+\end{equation}
+
+\begin{algorithm}[htbp]
+\caption{Random Forest Inference}
+\label{alg:rf_infer}
+\begin{algorithmic}[1]
+\Require $\mathbf{x}$, ensemble $\{h_b\}_{b=1}^B$
+\State $\mathbf{x}' \gets \text{StandardScaler}(\mathbf{x})$
+\State $\mathbf{p} \gets \frac{1}{B}\sum_{b=1}^B \text{Proba}(h_b, \mathbf{x}')$
+\State \Return $\arg\max_k p_k$, $\max_k p_k$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Complexity:} $O(B \cdot d \cdot \log n)$ per inference, with $d{=}7$ features held constant.
+
+\section{RAG Pipeline}
+\label{sec:algo_rag}
+
+Let $Q$ be user query tokens, $D$ knowledge documents. Retrieval $R(Q)=\{d_i \mid \exists k \in \text{keywords}(d_i): k \subseteq Q\}$. Generation $G(\pi_{\text{sys}}, \oplus_{d \in R} d, Q)$ streams output tokens.
+
+\input{tikz/flowcharts_all}
+
+\section{Sensor Monitoring}
+Sensor polling subscribes to RTDB \texttt{onValue} events; complexity $O(1)$ amortized per UI refresh per snapshot under Firebase SDK caching.
+
+\section{Chapter Summary}
+Persistence schemas supporting these algorithms are specified in \Cref{ch:database}.

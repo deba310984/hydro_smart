@@ -1,0 +1,73 @@
+\chapter{System Design}
+\label{ch:design}
+
+\section{Design Methodology}
+Design follows a top-down refinement from context diagram to deployable components. UML 2.x viewpoints (structural, behavioral, deployment) are realized using TikZ for publication-quality vector graphics.
+
+\section{High-Level Architecture}
+\input{tikz/system_architecture}
+\Cref{fig:high_level_architecture} illustrates logical layering: presentation (Flutter widgets), application state (Riverpod), repositories, and external services. Such separation satisfies NFR-05 maintainability.
+
+\section{Deployment Architecture}
+\input{tikz/deployment_architecture}
+
+\section{Component Diagram}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[comp/.style={rectangle, draw, fill=blue!8, rounded corners, minimum width=2.5cm, minimum height=0.9cm, align=center, font=\scriptsize}]
+\node[comp] (ui) {UI Components};
+\node[comp, below=0.8cm of ui] (prov) {Providers};
+\node[comp, below=0.8cm of prov] (repo) {Repositories};
+\node[comp, right=2.8cm of repo] (fb) {Firebase SDK};
+\node[comp, left=2.8cm of repo] (http) {HTTP Clients};
+\draw[-{Stealth}, thick] (ui)--(prov)--(repo);
+\draw[-{Stealth}, thick] (repo)--(fb);
+\draw[-{Stealth}, thick] (repo)--(http);
+\end{tikzpicture}
+\caption{Component diagram of the Flutter client illustrating dependency direction from UI to infrastructure adapters.}
+\label{fig:component_diagram}
+\end{figure}
+
+\section{Package Diagram}
+The repository organizes Dart packages into \texttt{core}, \texttt{data}, \texttt{domain}, and \texttt{features/*}, enforcing acyclic dependencies from features toward domain abstractions.
+
+\section{Behavioral Models}
+\input{tikz/sequence_recommendation}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize, activity/.style={rectangle, draw, rounded corners, minimum width=2.6cm, minimum height=0.65cm, align=center}]
+\node[activity, fill=green!10] (a) {Monitor Sensors};
+\node[activity, below=0.5cm of a] (b) {Evaluate Thresholds};
+\node[activity, below=0.5cm of b] (c) {Update Dashboard};
+\node[activity, below=0.5cm of c] (d) {Notify User?};
+\draw[-{Stealth}, thick] (a)--(b)--(c)--(d);
+\end{tikzpicture}
+\caption{Activity diagram for continuous sensor monitoring and dashboard refresh.}
+\label{fig:activity_sensor}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  state/.style={rectangle, draw, rounded corners, minimum width=2.2cm, minimum height=0.7cm, align=center}]
+\node[circle, fill=black, inner sep=1.5pt] (i) at (0,0) {};
+\node[state, right=1.2cm of i] (unauth) {Unauthenticated};
+\node[state, right=1.2cm of unauth] (auth) {Authenticated};
+\node[state, below=1cm of auth] (load) {Loading Profile};
+\draw[-{Stealth}, thick] (i)--(unauth);
+\draw[-{Stealth}, thick] (unauth) -- node[above]{login} (auth);
+\draw[-{Stealth}, thick] (auth)--(load);
+\end{tikzpicture}
+\caption{State diagram for Firebase authentication session lifecycle.}
+\label{fig:state_auth}
+\end{figure}
+
+\section{Communication Diagram}
+Repository objects communicate with singleton HTTP clients and Firebase SDK instances through narrow interfaces, minimizing coupling.
+
+\section{Security Architecture}
+Secrets (Gemini API keys) should migrate to Cloud Functions; current design stores configuration in Firestore \texttt{config/gemini\_config} with read access limited to authenticated users. RTDB rules must scope writes to device owners.
+
+\section{Chapter Summary}
+\Cref{ch:implementation} details module realization corresponding to design artifacts herein.

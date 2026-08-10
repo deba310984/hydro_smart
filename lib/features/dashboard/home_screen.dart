@@ -37,6 +37,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // Scaffold key for drawer
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Shared by the dashboard's scrollable content so it can be reset to the
+  // top once the onboarding tutorial finishes (Scrollable.ensureVisible
+  // during the tutorial otherwise leaves the page scrolled wherever the
+  // last spotlighted step left it, hiding the header content).
+  final ScrollController _dashboardScrollController = ScrollController();
+
   // Global keys for tutorial targeting
   final GlobalKey _profileHeaderKey = GlobalKey();
   final GlobalKey _mandiTrackerKey = GlobalKey();
@@ -72,10 +78,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _checkAndStartOnboarding() {
     if (_onboardingChecked) return;
+
+    // hasCompletedOnboarding loads asynchronously from SharedPreferences and
+    // defaults to false until that finishes. Deciding here before it loads
+    // would auto-start the tutorial on every cold launch, even for users
+    // who already completed it - wait for statusLoaded and retry (via the
+    // ref.watch in build) on the next build once it's ready.
+    final onboardingState = ref.read(onboardingProvider);
+    if (!onboardingState.statusLoaded) return;
     _onboardingChecked = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final onboardingState = ref.read(onboardingProvider);
       if (!onboardingState.hasCompletedOnboarding) {
         // Create tutorial steps with the actual GlobalKeys
         final steps = _createTutorialSteps();
@@ -255,7 +268,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _dashboardScrollController.dispose();
     super.dispose();
+  }
+
+  /// Scrolls the dashboard back to the top. Called once the onboarding
+  /// tutorial finishes (or is skipped), since it may have scrolled the
+  /// dashboard down to bring the last spotlighted feature into view.
+  void _resetScrollAfterOnboarding() {
+    if (!_dashboardScrollController.hasClients) return;
+    _dashboardScrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+    );
   }
 
   void _initializeFarmController() {
@@ -283,8 +309,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final isMobile = MediaQuery.of(context).size.width < 600;
     final authState = ref.watch(authStateProvider);
 
+    // Watched (not just read) so build() re-runs once the async
+    // SharedPreferences load finishes, giving _checkAndStartOnboarding a
+    // chance to re-evaluate with the real persisted value.
+    ref.watch(onboardingProvider.select((s) => s.statusLoaded));
+
     // Check onboarding status after first build
     _checkAndStartOnboarding();
+
+    // Reset the dashboard scroll position once the tutorial finishes -
+    // Scrollable.ensureVisible during the tutorial can leave the page
+    // scrolled down to the last spotlighted feature otherwise.
+    ref.listen<OnboardingState>(onboardingProvider, (previous, next) {
+      if (previous?.isActive == true && !next.isActive) {
+        _resetScrollAfterOnboarding();
+      }
+    });
 
     return OnboardingWrapper(
       child: authState.when(
@@ -649,6 +689,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             ),
                           ),
                           child: SingleChildScrollView(
+                            controller: _dashboardScrollController,
                             padding: const EdgeInsets.all(20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -910,6 +951,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   );
                                 }
                                 return SingleChildScrollView(
+                                  controller: _dashboardScrollController,
                                   padding: const EdgeInsets.all(20),
                                   child: Column(
                                     crossAxisAlignment:

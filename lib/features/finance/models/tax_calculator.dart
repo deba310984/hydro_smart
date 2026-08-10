@@ -26,11 +26,13 @@ class TaxCalculator {
     required double equipmentPurchase,
     required double packagingPurchase,
     required double otherPurchases,
+    double otherGSTRate = 18.0, // Default 18%, now customizable
   }) {
     final fertilizerGST = fertilizerPurchase * gstRateFertilizers / 100;
     final equipmentGST = equipmentPurchase * gstRateEquipment / 100;
     final packagingGST = packagingPurchase * gstRatePackaging / 100;
-    final otherGST = otherPurchases * 0.18; // Assume 18% for others
+    final otherGST =
+        otherPurchases * (otherGSTRate / 100); // Now uses user input
 
     return GSTBreakdown(
       fertilizerGST: fertilizerGST,

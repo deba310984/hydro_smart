@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'features/crop_recommendation/presentation/pages/crop_recommendation_page.dart';
-import 'features/dashboard/presentation/pages/dashboard_page.dart'; // Your existing dashboard
+import 'features/dashboard/home_screen.dart';
 
 class HydroSmartApp extends StatelessWidget {
+  const HydroSmartApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,8 +17,8 @@ class HydroSmartApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       home: HomePage(),
       routes: {
-        '/dashboard': (context) => DashboardPage(),
-        '/crops': (context) => CropRecommendationPage(),
+        '/dashboard': (context) => const HomeScreen(),
+        '/crops': (context) => const CropRecommendationPage(),
       },
     );
   }
@@ -24,11 +26,13 @@ class HydroSmartApp extends StatelessWidget {
 
 /// Simple home page with navigation to crop panel
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('HydroSmart'),
+        title: const Text('HydroSmart'),
         centerTitle: true,
       ),
       body: Center(
@@ -37,8 +41,8 @@ class HomePage extends StatelessWidget {
           children: [
             // Crop Recommendations Button
             ElevatedButton.icon(
-              icon: Icon(Icons.grass, size: 28),
-              label: Text(
+              icon: const Icon(Icons.grass, size: 28),
+              label: const Text(
                 'Hydroponic Crops',
                 style: TextStyle(fontSize: 16),
               ),
@@ -46,21 +50,21 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CropRecommendationPage(),
+                    builder: (context) => const CropRecommendationPage(),
                   ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Dashboard Button
             ElevatedButton.icon(
-              icon: Icon(Icons.dashboard, size: 28),
-              label: Text(
+              icon: const Icon(Icons.dashboard, size: 28),
+              label: const Text(
                 'Dashboard',
                 style: TextStyle(fontSize: 16),
               ),
@@ -68,16 +72,16 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(context, '/dashboard');
               },
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
             ),
 
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
 
             // Info Card
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 24),
-              padding: EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.green[50],
                 borderRadius: BorderRadius.circular(8),
@@ -94,12 +98,12 @@ class HomePage extends StatelessWidget {
                       color: Colors.green[900],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Explore 6 hydroponic crops with detailed information and advanced filtering by technique, season, duration, profit margin, difficulty, and market demand.',
                     style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
                     '✓ 6 sample crops with complete data\n'
                     '✓ 6 advanced filters\n'
@@ -120,29 +124,31 @@ class HomePage extends StatelessWidget {
 
 // Alternative: If you want to add to existing dashboard
 class DashboardWithCropButton extends StatelessWidget {
+  const DashboardWithCropButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Dashboard')),
+      appBar: AppBar(title: const Text('Dashboard')),
       body: ListView(
         children: [
           // Your existing dashboard items...
 
           // Add this:
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
               child: ListTile(
-                leading: Icon(Icons.grass, color: Colors.green),
-                title: Text('Hydroponic Crops'),
-                subtitle: Text('View & filter available crops'),
-                trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                leading: const Icon(Icons.grass, color: Colors.green),
+                title: const Text('Hydroponic Crops'),
+                subtitle: const Text('View & filter available crops'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CropRecommendationPage(),
+                      builder: (context) => const CropRecommendationPage(),
                     ),
                   );
                 },

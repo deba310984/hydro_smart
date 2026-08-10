@@ -76,4 +76,5 @@ flutter:
     - assets/models/
     - assets/labels/
     - assets/crop_dataset.json
+    - assets/logo.png
 

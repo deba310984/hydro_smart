@@ -57,7 +57,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           // Royal Header
           SliverAppBar(
-            expandedHeight: 140,
+            // expandedHeight covers the bottom widget too, so it must fit:
+            // status bar + back-button row (kToolbarHeight) + header row
+            // (icon 52 + padding) + the icon&text TabBar (~75). At 140 the
+            // title/subtitle were drawn on top of the tab labels.
+            expandedHeight: 250,
             pinned: true,
             backgroundColor: AppTheme.royalPurple,
             flexibleSpace: FlexibleSpaceBar(
@@ -74,8 +78,12 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    // Top inset clears the app bar's own back button, which
+                    // is drawn over this flexibleSpace at the top-left.
+                    padding: const EdgeInsets.fromLTRB(
+                        20, kToolbarHeight + 4, 20, 20),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -90,26 +98,30 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Finance Hub',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                        // Expanded so the long subtitle wraps instead of
+                        // overflowing the Row on narrow screens.
+                        const Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Finance Hub',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Advanced Farm Financial Management',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
+                              Text(
+                                'Advanced Farm Financial Management',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -536,8 +548,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
                   );
                 }).toList(),
                 onChanged: (value) {
-                  if (value != null)
+                  if (value != null) {
                     setState(() => _selectedFYStartYear = value);
+                  }
                 },
               ),
             ),
@@ -846,12 +859,13 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
 
   // ==================== TAB 2: TAXATION ====================
   Widget _buildTaxationTab(BuildContext context, dynamic finance) {
-    // Calculate GST
+    // Calculate GST (now using custom rate from user)
     final gstInput = TaxCalculator.calculateInputGST(
       fertilizerPurchase: finance.nutrientCost,
       equipmentPurchase: finance.equipmentInvestment / 12,
       packagingPurchase: finance.packagingCost,
       otherPurchases: finance.seedsCost,
+      otherGSTRate: finance.customOtherGSTRate, // Dynamic user input
     );
 
     final gstOutput = TaxCalculator.calculateOutputGST(
@@ -951,14 +965,86 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
             Colors.blue,
           ),
           const SizedBox(height: 12),
-          _buildGSTSubItem('Fertilizers (5%)',
-              '₹${gstInput.fertilizerGST.toStringAsFixed(0)}'),
-          _buildGSTSubItem('Equipment (12%)',
-              '₹${gstInput.equipmentGST.toStringAsFixed(0)}'),
-          _buildGSTSubItem('Packaging (18%)',
-              '₹${gstInput.packagingGST.toStringAsFixed(0)}'),
-          _buildGSTSubItem(
-              'Other (18%)', '₹${gstInput.otherGST.toStringAsFixed(0)}'),
+          _buildEditableGSTSubItem(
+            context,
+            ref,
+            finance,
+            'Fertilizers (5%)',
+            '₹${gstInput.fertilizerGST.toStringAsFixed(0)}',
+            finance.nutrientCost,
+            'nutrientCost',
+          ),
+          _buildEditableGSTSubItem(
+            context,
+            ref,
+            finance,
+            'Equipment (12%)',
+            '₹${gstInput.equipmentGST.toStringAsFixed(0)}',
+            finance.equipmentInvestment / 12,
+            'equipmentInvestment',
+          ),
+          _buildEditableGSTSubItem(
+            context,
+            ref,
+            finance,
+            'Packaging (18%)',
+            '₹${gstInput.packagingGST.toStringAsFixed(0)}',
+            finance.packagingCost,
+            'packagingCost',
+          ),
+          _buildEditableGSTSubItem(
+            context,
+            ref,
+            finance,
+            'Other (${finance.customOtherGSTRate.toStringAsFixed(0)}%)',
+            '₹${gstInput.otherGST.toStringAsFixed(0)}',
+            finance.seedsCost,
+            'seedsCost',
+          ),
+          const SizedBox(height: 12),
+          // Add Purchase Button
+          ElevatedButton.icon(
+            onPressed: () => _showGSTSlabsDialog(context),
+            icon: const Icon(Icons.add_shopping_cart, size: 18),
+            label: const Text('View GST Slabs & Add Purchase'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.royalPurple,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Edit Custom GST Rate
+          InkWell(
+            onTap: () => _showCustomGSTRateDialog(context, ref, finance),
+            child: Container(
+              margin: const EdgeInsets.only(left: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.royalGold.withAlpha(26),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppTheme.royalGold.withAlpha(51)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.edit, size: 14, color: AppTheme.royalGold),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Customize Other GST Rate',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const Divider(height: 24),
           // Output GST
           _buildGSTRow(
@@ -1528,8 +1614,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text('Rate: ${scheme['rate']} | ${scheme['tenure']}'),
-            trailing:
-                Icon(Icons.open_in_new, size: 18, color: AppTheme.royalPurple),
+            trailing: const Icon(Icons.open_in_new,
+                size: 18, color: AppTheme.royalPurple),
           );
         }).toList(),
       ),
@@ -1781,7 +1867,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
               Container(height: 50, width: 1, color: Colors.grey[300]),
               _buildBreakEvenMetric(
                 'Margin',
-                '${breakEven.contributionMargin.toStringAsFixed(0)}',
+                breakEven.contributionMargin.toStringAsFixed(0),
                 Icons.pie_chart,
               ),
             ],
@@ -2007,12 +2093,38 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
                         ),
                       ],
                     ),
-                    Text(
-                      '₹${_formatNumber(category['amount'])} (${category['percentage']}%)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: category['color'] as Color,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          '₹${_formatNumber(category['amount'])} (${category['percentage']}%)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: category['color'] as Color,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () => _showBudgetCostEditDialog(
+                            context,
+                            ref,
+                            category['name'] as String,
+                            category['amount'] as double,
+                            finance,
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: (category['color'] as Color).withAlpha(26),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(
+                              Icons.edit,
+                              size: 14,
+                              color: category['color'] as Color,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -2716,6 +2828,606 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen>
       ),
     );
   }
+
+  void _showCustomGSTRateDialog(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic finance,
+  ) {
+    final controller = TextEditingController(
+      text: finance.customOtherGSTRate.toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.royalGold.withAlpha(38),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.percent,
+                  color: AppTheme.royalGold, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Custom GST Rate',
+              style: TextStyle(color: AppTheme.royalPurple),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Set custom GST rate for "Other Purchases"',
+              style: TextStyle(fontSize: 13, color: Colors.black87),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                hintText: 'Enter GST rate (e.g., 18)',
+                suffixText: '%',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: AppTheme.royalPurple.withAlpha(77)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(color: AppTheme.royalPurple, width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.blue.withAlpha(20),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue, size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Common GST rates: 0%, 5%, 12%, 18%, 28%',
+                      style: TextStyle(fontSize: 11, color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final rate = double.tryParse(controller.text) ?? 18.0;
+              if (rate < 0 || rate > 100) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('GST rate must be between 0% and 100%'),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+                return;
+              }
+
+              final user = FirebaseAuth.instance.currentUser;
+              if (user != null) {
+                ref
+                    .read(financeControllerProvider.notifier)
+                    .updateCustomGSTRate(
+                      user.uid,
+                      rate,
+                    );
+              }
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Custom GST rate updated to $rate%'),
+                  backgroundColor: AppTheme.royalPurple,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.royalPurple,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableGSTSubItem(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic finance,
+    String label,
+    String amount,
+    double currentValue,
+    String fieldName,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: InkWell(
+        onTap: () {
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            _showEditDialog(
+              context,
+              ref,
+              label,
+              currentValue,
+              (newValue) {
+                ref
+                    .read(financeControllerProvider.notifier)
+                    .updateExpense(user.uid, fieldName, newValue);
+              },
+            );
+          }
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 32),
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.edit, size: 12, color: Colors.grey[500]),
+              ],
+            ),
+            Text(
+              amount,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showGSTSlabsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 600, maxWidth: 400),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.royalGold.withAlpha(38),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: AppTheme.royalGold,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'GST Slabs for Agriculture',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.royalPurple,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, size: 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Government GST Rates:',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView(
+                  children: [
+                    _buildGSTSlabCard(
+                      '0% GST - Exempt',
+                      'Raw agricultural produce, seeds, organic manure',
+                      Colors.green,
+                      [
+                        'Fresh vegetables & fruits',
+                        'Seeds for growing',
+                        'Natural fertilizers',
+                        'Farm produce (unprocessed)',
+                      ],
+                    ),
+                    _buildGSTSlabCard(
+                      '5% GST',
+                      'Essential agricultural inputs',
+                      Colors.blue,
+                      [
+                        'Fertilizers (chemical)',
+                        'Irrigation systems',
+                        'Agricultural tools',
+                        'Packed vegetables',
+                      ],
+                    ),
+                    _buildGSTSlabCard(
+                      '12% GST',
+                      'Equipment & machinery',
+                      Colors.orange,
+                      [
+                        'Farming equipment',
+                        'Processing machinery',
+                        'LED grow lights',
+                        'Pumps & motors',
+                      ],
+                    ),
+                    _buildGSTSlabCard(
+                      '18% GST',
+                      'Packaged goods & services',
+                      Colors.deepOrange,
+                      [
+                        'Packaging materials',
+                        'Processed foods',
+                        'Professional services',
+                        'Other supplies',
+                      ],
+                    ),
+                    _buildGSTSlabCard(
+                      '28% GST',
+                      'Luxury items',
+                      Colors.red,
+                      [
+                        'High-end automation',
+                        'Premium equipment',
+                        'Non-essential items',
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withAlpha(20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: Colors.blue, size: 20),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Tip: Input your purchases in the correct category to ensure accurate GST calculations.',
+                        style: TextStyle(fontSize: 11, color: Colors.black87),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGSTSlabCard(
+    String title,
+    String description,
+    Color color,
+    List<String> examples,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withAlpha(77), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  title.split('-')[0].trim(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title.contains('-') ? title.split('-')[1].trim() : '',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...examples.map((example) => Padding(
+                padding: const EdgeInsets.only(left: 8, top: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        example,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  void _showBudgetCostEditDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String categoryName,
+    double currentAmount,
+    dynamic finance,
+  ) {
+    // Map category names to their respective fields
+    Map<String, List<String>> categoryFields = {
+      'Utilities': ['electricityCost', 'waterCost'],
+      'Inputs': ['nutrientCost', 'seedsCost'],
+      'Labor': ['laborCost'],
+      'Operations': ['packagingCost', 'transportCost', 'maintenanceCost'],
+    };
+
+    final fields = categoryFields[categoryName] ?? [];
+    if (fields.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.royalGold.withAlpha(38),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child:
+                  const Icon(Icons.edit, color: AppTheme.royalGold, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Edit $categoryName Costs',
+                style:
+                    const TextStyle(color: AppTheme.royalPurple, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: fields.map((field) {
+              double currentValue = 0;
+              String fieldLabel = '';
+
+              switch (field) {
+                case 'electricityCost':
+                  currentValue = finance.electricityCost;
+                  fieldLabel = 'Electricity';
+                  break;
+                case 'waterCost':
+                  currentValue = finance.waterCost;
+                  fieldLabel = 'Water';
+                  break;
+                case 'nutrientCost':
+                  currentValue = finance.nutrientCost;
+                  fieldLabel = 'Nutrients';
+                  break;
+                case 'seedsCost':
+                  currentValue = finance.seedsCost;
+                  fieldLabel = 'Seeds';
+                  break;
+                case 'laborCost':
+                  currentValue = finance.laborCost;
+                  fieldLabel = 'Labor';
+                  break;
+                case 'packagingCost':
+                  currentValue = finance.packagingCost;
+                  fieldLabel = 'Packaging';
+                  break;
+                case 'transportCost':
+                  currentValue = finance.transportCost;
+                  fieldLabel = 'Transport';
+                  break;
+                case 'maintenanceCost':
+                  currentValue = finance.maintenanceCost;
+                  fieldLabel = 'Maintenance';
+                  break;
+              }
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildInlineCostEditor(
+                  context,
+                  ref,
+                  fieldLabel,
+                  currentValue,
+                  field,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Done',
+                style: TextStyle(
+                    color: AppTheme.royalPurple, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInlineCostEditor(
+    BuildContext context,
+    WidgetRef ref,
+    String label,
+    double currentValue,
+    String fieldName,
+  ) {
+    final controller =
+        TextEditingController(text: currentValue.toStringAsFixed(0));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            hintText: 'Enter amount',
+            prefixText: '₹ ',
+            suffixIcon: IconButton(
+              icon:
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20),
+              onPressed: () {
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  final amount = double.tryParse(controller.text) ?? 0;
+                  ref
+                      .read(financeControllerProvider.notifier)
+                      .updateExpense(user.uid, fieldName, amount);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$label updated to ₹$amount'),
+                      backgroundColor: AppTheme.royalPurple,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: AppTheme.royalPurple.withAlpha(77)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide:
+                  const BorderSide(color: AppTheme.royalPurple, width: 2),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+          style: const TextStyle(fontSize: 14),
+        ),
+      ],
+    );
+  }
 }
 
 // EMI Calculator Widget
@@ -2904,8 +3616,9 @@ class _EMICalculatorWidgetState extends State<_EMICalculatorWidget> {
   }
 
   String _formatNumber(double number) {
-    if (number >= 10000000)
+    if (number >= 10000000) {
       return '${(number / 10000000).toStringAsFixed(1)}Cr';
+    }
     if (number >= 100000) return '${(number / 100000).toStringAsFixed(1)}L';
     if (number >= 1000) return '${(number / 1000).toStringAsFixed(1)}K';
     return number.toStringAsFixed(0);

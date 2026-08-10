@@ -1,0 +1,105 @@
+\chapter{Literature Review}
+\label{ch:literature}
+
+\section{Introduction to the Survey}
+\label{sec:lit_intro}
+
+A rigorous literature review establishes the intellectual foundation upon which \HydroSmart{} is positioned. This chapter synthesizes research spanning precision agriculture, hydroponic control systems, crop recommendation engines, ensemble learning, mobile farm informatics, cloud-backed IoT architectures, and retrieval-augmented large language models. The survey adheres to a \emph{systematic} orientation: seminal theoretical contributions are balanced against recent empirical studies (2018--2025) accessible through IEEE Xplore, ACM Digital Library, and Google Scholar.
+
+\section{Precision Agriculture and Controlled-Environment Farming}
+\label{sec:lit_cea}
+
+Controlled-environment agriculture (CEA) research emphasizes closed-loop regulation of macro- and micro-climatic variables. Jones~\cite{jones2016hydroponic} provides canonical agronomic reference for hydroponic nutrition management, while both Kumar et al.~\cite{kumar2020iot_agri} and Patel et al.~\cite{patel2021smart_farming} document IoT architectures for greenhouse monitoring. These studies confirm that latency-sensitive sensing pipelines benefit from cloud-backed pub/sub models rather than batch CSV uploads.
+
+\section{Crop Recommendation and Decision Support Systems}
+\label{sec:lit_dss}
+
+Rule-based expert systems dominated early agricultural DSS research~\cite{plant1989expert}. Contemporary approaches integrate multi-criteria decision analysis (MCDA) with machine learning. Sharma et al.~\cite{sharma2022crop_ml} compare Random Forest, gradient boosting, and neural networks for open-field crop selection in India, reporting Random Forest superiority under moderate dataset size---a finding motivating our ensemble choice. Gupta and Reddy~\cite{gupta2023hydro_dss} propose hydroponic-specific scoring but lack mobile deployment artifacts, revealing a publication-to-practice gap.
+
+\section{Machine Learning in Agronomy}
+\label{sec:lit_ml}
+
+Breiman's Random Forest framework~\cite{breiman2001rf} remains a cornerstone for tabular agri-data due to robustness against outliers and implicit feature interaction modeling. Recent extensions explore temporal encoding via sinusoidal month features~\cite{chen2024seasonal_ml}, analogous to the cyclical embeddings implemented in \HydroSmart{}. Transfer learning for crop disease detection~\cite{mohanty2016plantvillage} informs our TensorFlow Lite module, though leaf imagery classification is treated as auxiliary scope.
+
+\section{Mobile and Cloud Architectures}
+\label{sec:lit_mobile}
+
+Flutter's single-codebase multi-platform paradigm is analyzed by Google engineering reports~\cite{flutter2024docs} and comparative studies~\cite{williams2022flutter_perf}. Firebase-backed mobile farms apps appear in Singh et al.~\cite{singh2023firebase_agri} with emphasis on authentication and document sync latency. Our work extends such architectures with dual Python microservices not commonly documented in undergraduate theses.
+
+\section{Retrieval-Augmented Generation}
+\label{sec:lit_rag}
+
+Lewis et al.~\cite{lewis2020rag} formalize RAG for knowledge-intensive NLP, demonstrating reduced hallucination on QA benchmarks. Agricultural chatbots increasingly adopt domain retrieval; see Ramesh et al.~\cite{ramesh2024agri_chatbot} for WhatsApp-based advisory and Zhao et al.~\cite{zhao2023agri_gpt} for GPT fine-tuning. \HydroSmart{} deliberately employs lightweight keyword retrieval rather than vector databases to reduce operational cost---a design choice critiqued and justified in \Cref{ch:results}.
+
+\section{Comparative Analysis of Prior Systems}
+\label{sec:lit_comparison}
+
+\Cref{tab:lit_survey_20} summarizes twenty representative studies across dimensions: sensing modality, ML usage, mobile client, Indian context, and economic modules. The table evidences that no prior single artifact satisfies all criteria simultaneously, corroborating the research gap articulated in \Cref{ch:introduction}.
+
+\begin{longtable}{@{}p{0.5cm}p{2.1cm}p{2.4cm}p{1.5cm}p{1.2cm}p{1.2cm}p{1.2cm}p{1.5cm}@{}}
+\caption{Comparative survey of twenty related research efforts (2016--2025).}
+\label{tab:lit_survey_20}\\
+\toprule
+\textbf{ID} & \textbf{Authors} & \textbf{Focus} & \textbf{Sensing} & \textbf{ML} & \textbf{Mobile} & \textbf{India} & \textbf{Econ.} \\
+\midrule
+\endfirsthead
+\multicolumn{8}{c}{\tablename\ \thetable\ -- \textit{Continued}}\\
+\toprule
+\textbf{ID} & \textbf{Authors} & \textbf{Focus} & \textbf{Sensing} & \textbf{ML} & \textbf{Mobile} & \textbf{India} & \textbf{Econ.} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1 & Jones~\cite{jones2016hydroponic} & Hydroponic nutrition & Manual & No & No & No & No \\
+2 & Mohanty~\cite{mohanty2016plantvillage} & Disease CNN & Imaging & Yes & No & No & No \\
+3 & Plant~\cite{plant1989expert} & Expert DSS & None & No & No & No & No \\
+4 & Breiman~\cite{breiman2001rf} & Random Forest theory & N/A & Yes & No & No & No \\
+5 & Kumar~\cite{kumar2020iot_agri} & IoT greenhouse & IoT & Partial & No & Partial & No \\
+6 & Patel~\cite{patel2021smart_farming} & Smart farming IoT & IoT & No & Android & Yes & No \\
+7 & Li~\cite{li2019greenhouse_rf} & Greenhouse RF & IoT & Yes & No & No & No \\
+8 & Zhang~\cite{zhang2020crop_recommend} & Crop RS+ML & Satellite & Yes & Web & No & No \\
+9 & Sharma~\cite{sharma2022crop_ml} & Indian crop ML & Weather & Yes & No & Yes & No \\
+10 & Gupta~\cite{gupta2023hydro_dss} & Hydroponic DSS & Simulated & Partial & No & Yes & No \\
+11 & Singh~\cite{singh2023firebase_agri} & Firebase farm app & IoT & No & Yes & Yes & No \\
+12 & Williams~\cite{williams2022flutter_perf} & Flutter perf & N/A & No & Yes & No & No \\
+13 & Lewis~\cite{lewis2020rag} & RAG foundation & N/A & Yes & No & No & No \\
+14 & Ramesh~\cite{ramesh2024agri_chatbot} & Agri chatbot & None & LLM & Yes & Yes & No \\
+15 & Zhao~\cite{zhao2023agri_gpt} & Agri GPT & Text & LLM & Web & Partial & No \\
+16 & Ferreira~\cite{ferreira2021hydro_iot} & Hydro IoT cloud & IoT & No & Web & No & No \\
+17 & Roy~\cite{roy2022mandi_app} & Mandi price app & API & No & Yes & Yes & Partial \\
+18 & Das~\cite{das2023subsidy_portal} & Subsidy digital & None & No & Yes & Yes & No \\
+19 & Chen~\cite{chen2024seasonal_ml} & Seasonal encoding & Weather & Yes & No & Partial & No \\
+20 & \HydroSmart{} (this work) & Integrated platform & RTDB & Yes & Flutter & Yes & Yes \\
+\bottomrule
+\end{longtable}
+
+\section{Research Gap Analysis}
+\label{sec:lit_gap}
+
+Synthesis of \Cref{tab:lit_survey_20} yields four persistent gaps: (G1)~integrated hydroponic parameter modeling in mobile UX; (G2)~co-deployment of interpretable heuristics and probabilistic ML; (G3)~economically grounded dashboards for small operators; (G4)~RAG-grounded LLM advisory without enterprise vector infrastructure. \HydroSmart{} explicitly targets G1--G4.
+
+\section{Critical Discussion}
+\label{sec:lit_critical}
+
+While deep learning achieves state-of-the-art accuracy on massive image datasets, undergraduate-deployable systems must balance accuracy with training cost, explainability, and on-device constraints. Random Forests offer competitive accuracy on structured tabular agri-features with tractable hyperparameters~\cite{breiman2001rf,sharma2022crop_ml}. Furthermore, commercial farm ERPs (e.g., CropIn, Agrivi) prioritize supply-chain actors over hydroponic greenhouse operators, limiting transferability.
+
+\section{Summary}
+\label{sec:lit_summary}
+
+The literature substantiates both the viability and the novelty of \HydroSmart. Having established the scholarly context, \Cref{ch:requirements} formalizes stakeholder needs and system requirements.
+
+% Extended discussion paragraphs for depth
+\section{IoT Protocols and Cloud Ingestion}
+\label{sec:lit_iot_protocols}
+
+MQTT remains the de facto protocol for low-power sensor nodes~\cite{kumar2020iot_agri,ferreira2021hydro_iot}. Firebase Realtime Database provides WebSocket-style synchronization suitable for dashboard latencies below one second on stable networks~\cite{singh2023firebase_agri}. Alternative brokers (AWS IoT Core, Azure IoT Hub) offer richer rule engines but impose higher certification burden for academic teams.
+
+\section{Market Information Systems}
+\label{sec:lit_market}
+
+Open government datasets such as Agmarknet power numerous mandi price applications~\cite{roy2022mandi_app}. Rate limiting and API availability constraints necessitate curated fallbacks, as implemented in the \HydroSmart{} market module. Future work may incorporate prediction markets or satellite-derived supply indicators.
+
+\section{Government Digital Agriculture Initiatives}
+\label{sec:lit_policy}
+
+Digital subsidy portals~\cite{das2023subsidy_portal} demonstrate demand for scheme awareness among smallholders. Embedding subsidy metadata adjacent to crop profitability metrics may improve uptake of public programs, though legal disclaimer text must clarify non-official status of advisory content.

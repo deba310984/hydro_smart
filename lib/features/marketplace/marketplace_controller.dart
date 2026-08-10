@@ -1,7 +1,7 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'marketplace_model.dart';
 
-// â”€â”€ Helper to build a Google Shopping search URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helper to build a Google Shopping search URL ─────────────────────────────
 String _googleShop(String query) =>
     'https://www.google.com/search?q=${Uri.encodeComponent(query)}&tbm=shop';
 
@@ -20,9 +20,9 @@ String _olx(String q) =>
 
 final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
   return const [
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  NUTRIENTS & SOLUTIONS
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'nut_1',
       name: 'Basic NPK Nutrient Solution 5L',
@@ -31,7 +31,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 550,
       rating: 4.2,
       reviewCount: 112,
-      icon: 'ðŸ§ª',
+      icon: '🧪',
       description:
           'Budget-friendly NPK solution perfect for beginners. Well-balanced minerals for leafy greens and herbs.',
       redirectUrl:
@@ -56,7 +56,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 680,
       rating: 4.6,
       reviewCount: 198,
-      icon: 'ðŸ§ª',
+      icon: '🧪',
       description:
           'One-part grow formula with all essential macro and micro nutrients. Popular among intermediate growers.',
       redirectUrl:
@@ -81,9 +81,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 1600,
       rating: 4.8,
       reviewCount: 342,
-      icon: 'ðŸ§«',
+      icon: '🧫',
       description:
-          'The gold standard nutrient trilogy â€” FloraGro, FloraBloom, FloraMicro. Full control over every growth stage.',
+          'The gold standard nutrient trilogy — FloraGro, FloraBloom, FloraMicro. Full control over every growth stage.',
       redirectUrl:
           'https://www.amazon.in/s?k=general+hydroponics+flora+series',
       source: 'amazon',
@@ -105,7 +105,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 380,
       rating: 4.4,
       reviewCount: 87,
-      icon: 'ðŸ’Š',
+      icon: '💊',
       description:
           'Prevents Ca/Mg deficiencies. Essential for tomatoes and peppers. Mix with base nutrients.',
       redirectUrl:
@@ -122,9 +122,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  MONITORING & TESTING
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'mon_1',
       name: 'Digital pH Meter Pocket',
@@ -133,9 +133,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 499,
       rating: 4.1,
       reviewCount: 215,
-      icon: 'ðŸ“',
+      icon: '📏',
       description:
-          'Compact pocket pH meter. Auto-calibration, waterproof tip, 0â€“14 pH range. Great starter tool.',
+          'Compact pocket pH meter. Auto-calibration, waterproof tip, 0–14 pH range. Great starter tool.',
       redirectUrl:
           'https://www.meesho.com/search?q=digital+ph+meter+pocket',
       source: 'meesho',
@@ -157,9 +157,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 2800,
       rating: 4.9,
       reviewCount: 421,
-      icon: 'ðŸ“',
+      icon: '📏',
       description:
-          'Professional-grade pH pen from Bluelab. Trusted globally, Â±0.1 accuracy with HOLD function.',
+          'Professional-grade pH pen from Bluelab. Trusted globally, ±0.1 accuracy with HOLD function.',
       redirectUrl:
           'https://www.amazon.in/s?k=bluelab+ph+pen',
       source: 'amazon',
@@ -181,9 +181,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 450,
       rating: 4.3,
       reviewCount: 534,
-      icon: 'ðŸ“Š',
+      icon: '📊',
       description:
-          'Measures TDS, EC and temperature simultaneously. 0â€“9990 ppm range. Includes protective cap.',
+          'Measures TDS, EC and temperature simultaneously. 0–9990 ppm range. Includes protective cap.',
       redirectUrl:
           'https://www.amazon.in/s?k=tds+ec+meter+digital+hydroponics',
       source: 'amazon',
@@ -205,7 +205,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 8500,
       rating: 4.9,
       reviewCount: 267,
-      icon: 'ðŸ”¬',
+      icon: '🔬',
       description:
           'Single device measures pH, EC and temperature. Waterproof, LCD display. Industry benchmark.',
       redirectUrl:
@@ -228,7 +228,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 250,
       rating: 4.2,
       reviewCount: 876,
-      icon: 'ðŸŒ¡ï¸',
+      icon: '🌡️',
       description:
           'Temperature and humidity display with Min/Max memory. Perfect for monitoring grow room conditions.',
       redirectUrl:
@@ -246,9 +246,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  LIGHTING
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'light_1',
       name: 'LED Grow Light 45W Panel',
@@ -257,9 +257,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 1299,
       rating: 4.1,
       reviewCount: 312,
-      icon: 'ðŸ’¡',
+      icon: '💡',
       description:
-          'Full spectrum LED panel with red/blue diodes. Covers 2Ã—2 ft canopy. Low heat output.',
+          'Full spectrum LED panel with red/blue diodes. Covers 2×2 ft canopy. Low heat output.',
       redirectUrl:
           'https://www.amazon.in/s?k=45w+led+grow+light+panel+full+spectrum',
       source: 'amazon',
@@ -281,9 +281,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 3999,
       rating: 4.7,
       reviewCount: 654,
-      icon: 'ðŸ’¡',
+      icon: '💡',
       description:
-          'Samsung LM281B diodes, daisy chain capable, dimmable. Covers 2Ã—3 ft vegetative / 2Ã—2 ft flower.',
+          'Samsung LM281B diodes, daisy chain capable, dimmable. Covers 2×3 ft vegetative / 2×2 ft flower.',
       redirectUrl:
           'https://www.amazon.in/s?k=mars+hydro+ts600+led+grow+light',
       source: 'amazon',
@@ -305,9 +305,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 14500,
       rating: 4.9,
       reviewCount: 189,
-      icon: 'ðŸŒŸ',
+      icon: '🌟',
       description:
-          'Commercial-grade 480W LED bar. 2.8 Âµmol/J efficacy, Samsung LM301H EVO chips. 5Ã—5 ft coverage.',
+          'Commercial-grade 480W LED bar. 2.8 µmol/J efficacy, Samsung LM301H EVO chips. 5×5 ft coverage.',
       redirectUrl:
           'https://www.amazon.in/s?k=spider+farmer+se5000+led+grow+light',
       source: 'amazon',
@@ -327,7 +327,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 450,
       rating: 3.9,
       reviewCount: 145,
-      icon: 'ðŸ”¦',
+      icon: '🔦',
       description:
           'T5 fluorescent tubes ideal for seedlings and cuttings. Low heat, low cost, easy to replace.',
       redirectUrl:
@@ -345,9 +345,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  PUMPS & EQUIPMENT
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'equip_1',
       name: 'Submersible Water Pump 800L/h',
@@ -356,7 +356,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 650,
       rating: 4.2,
       reviewCount: 478,
-      icon: 'ðŸ’§',
+      icon: '💧',
       description:
           'Quiet submersible pump suitable for DWC and NFT systems. Max head 0.5m, 10W power.',
       redirectUrl:
@@ -381,7 +381,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 1200,
       rating: 4.5,
       reviewCount: 312,
-      icon: 'ðŸ’§',
+      icon: '💧',
       description:
           'Heavy-duty pump for large NFT or flood-and-drain systems. Max head 2m, 30W, durable impeller.',
       redirectUrl:
@@ -406,7 +406,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 399,
       rating: 4.3,
       reviewCount: 623,
-      icon: 'ðŸŒ¬ï¸',
+      icon: '🌬️',
       description:
           'Dual-outlet air pump with adjustable output. Ideal for DWC oxygenation. Very quiet operation.',
       redirectUrl:
@@ -426,15 +426,15 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
     ),
     MarketplaceProduct(
       id: 'equip_4',
-      name: 'Grow Tent 60Ã—60Ã—140cm',
+      name: 'Grow Tent 60×60×140cm',
       category: 'Equipment',
       price: 2199,
       originalPrice: 2999,
       rating: 4.4,
       reviewCount: 289,
-      icon: 'â›º',
+      icon: '⛺',
       description:
-          '600D mylar-lined grow tent. Dual vent ports, thick metal poles. 60Ã—60Ã—140cm. Easy assembly.',
+          '600D mylar-lined grow tent. Dual vent ports, thick metal poles. 60×60×140cm. Easy assembly.',
       redirectUrl:
           'https://www.amazon.in/s?k=grow+tent+60x60+hydroponics',
       source: 'amazon',
@@ -459,7 +459,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 2400,
       rating: 4.5,
       reviewCount: 198,
-      icon: 'ðŸŒ€',
+      icon: '🌀',
       description:
           'Complete ventilation kit: 4" inline fan + activated carbon filter + ducting. Silent motor.',
       redirectUrl:
@@ -484,7 +484,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 299,
       rating: 4.4,
       reviewCount: 1204,
-      icon: 'â±ï¸',
+      icon: '⏱️',
       description:
           'Mechanical 24h plug-in timer with 15 min intervals. Automate lights and pumps easily.',
       redirectUrl:
@@ -503,9 +503,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  SEEDS
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'seed_1',
       name: 'Lettuce Butterhead Seeds (500 seeds)',
@@ -513,9 +513,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 79,
       rating: 4.5,
       reviewCount: 342,
-      icon: 'ðŸ¥¬',
+      icon: '🥬',
       description:
-          'High-germination butterhead lettuce. Ready in 28â€“35 days in DWC or NFT. Non-GMO.',
+          'High-germination butterhead lettuce. Ready in 28–35 days in DWC or NFT. Non-GMO.',
       redirectUrl:
           'https://www.amazon.in/s?k=butterhead+lettuce+seeds+hydroponic',
       source: 'amazon',
@@ -538,9 +538,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 249,
       rating: 4.6,
       reviewCount: 289,
-      icon: 'ðŸ…',
+      icon: '🍅',
       description:
-          'Indeterminate hybrid variety. Clusters of sweet 15â€“20g fruits. Ideal for DWC and NFT.',
+          'Indeterminate hybrid variety. Clusters of sweet 15–20g fruits. Ideal for DWC and NFT.',
       redirectUrl:
           'https://www.amazon.in/s?k=cherry+tomato+f1+hybrid+seeds',
       source: 'amazon',
@@ -561,9 +561,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 99,
       rating: 4.7,
       reviewCount: 198,
-      icon: 'ðŸŒ¿',
+      icon: '🌿',
       description:
-          'Classic Italian basil. Strong aroma, broad leaves. Ready in 21â€“27 days. USDA organic certified.',
+          'Classic Italian basil. Strong aroma, broad leaves. Ready in 21–27 days. USDA organic certified.',
       redirectUrl:
           'https://www.amazon.in/s?k=organic+basil+genovese+seeds',
       source: 'amazon',
@@ -584,9 +584,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 129,
       rating: 4.3,
       reviewCount: 156,
-      icon: 'ðŸƒ',
+      icon: '🍃',
       description:
-          'Smooth-leaf spinach variety for hydroponic systems. Rich in iron. 25â€“30 day turnaround.',
+          'Smooth-leaf spinach variety for hydroponic systems. Rich in iron. 25–30 day turnaround.',
       redirectUrl:
           'https://www.amazon.in/s?k=palak+spinach+seeds+hydroponic',
       source: 'amazon',
@@ -608,7 +608,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 350,
       rating: 4.4,
       reviewCount: 178,
-      icon: 'ðŸ“',
+      icon: '🍓',
       description:
           'Mixed alpine and everbearing strawberry varieties. Ideal for vertical and tower systems.',
       redirectUrl:
@@ -624,18 +624,18 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  GROWING MEDIA
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'media_1',
-      name: 'Rockwool Grow Cubes 4Ã—4cm (Pack of 24)',
+      name: 'Rockwool Grow Cubes 4×4cm (Pack of 24)',
       category: 'Growing Media',
       price: 299,
       originalPrice: 399,
       rating: 4.3,
       reviewCount: 267,
-      icon: 'ðŸª¨',
+      icon: '🪨',
       description:
           'Pre-formed rockwool starter cubes. Pre-soak in pH 5.5 water for best germination results.',
       redirectUrl:
@@ -661,7 +661,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 549,
       rating: 4.5,
       reviewCount: 432,
-      icon: 'âšª',
+      icon: '⚪',
       description:
           'Reusable, pH-neutral LECA balls. Excellent aeration and drainage. Suits DWC, ebb-and-flow.',
       redirectUrl:
@@ -687,7 +687,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 89,
       rating: 4.4,
       reviewCount: 567,
-      icon: 'ðŸ¥¥',
+      icon: '🥥',
       description:
           'Compressed coco coir brick. Expands ~14x when hydrated. pH neutral, excellent moisture retention.',
       redirectUrl:
@@ -711,7 +711,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 199,
       rating: 4.3,
       reviewCount: 312,
-      icon: 'ðŸ”˜',
+      icon: '🔘',
       description:
           'Coarse perlite for improved drainage when mixed with coco. Prevents root rot in media beds.',
       redirectUrl:
@@ -728,9 +728,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  SYSTEMS & KITS
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'sys_1',
       name: 'DWC Bucket Starter Kit 20L',
@@ -739,7 +739,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 1499,
       rating: 4.3,
       reviewCount: 187,
-      icon: 'ðŸª£',
+      icon: '🪣',
       description:
           'Complete DWC bucket kit: 20L food-safe bucket, net pots, air pump, stone, tubing. Great for beginners.',
       redirectUrl:
@@ -764,7 +764,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 3500,
       rating: 4.6,
       reviewCount: 134,
-      icon: 'ðŸ—ï¸',
+      icon: '🏗️',
       description:
           '6 channels, 1.2m long, 50mm NFT pipes with net cup holes. Includes pump, reservoir, timer.',
       redirectUrl:
@@ -788,9 +788,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 599,
       rating: 4.4,
       reviewCount: 456,
-      icon: 'ðŸ«™',
+      icon: '🫙',
       description:
-          'Passive Kratky system â€” no pump needed. Five wide-mouth mason jars with net cup lids. Beginner dream.',
+          'Passive Kratky system — no pump needed. Five wide-mouth mason jars with net cup lids. Beginner dream.',
       redirectUrl:
           'https://www.amazon.in/s?k=kratky+method+jar+kit+hydroponic',
       source: 'amazon',
@@ -813,7 +813,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 9999,
       rating: 4.8,
       reviewCount: 512,
-      icon: 'ðŸ“¦',
+      icon: '📦',
       description:
           'All-in-one kit: NFT system, pH/EC meters, nutrients, growing media, seeds, timer. Everything to start.',
       redirectUrl:
@@ -838,7 +838,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 5499,
       rating: 4.5,
       reviewCount: 278,
-      icon: 'ðŸ—¼',
+      icon: '🗼',
       description:
           '5-tier rotating tower with 20 planting pods. Built-in pump and reservoir. Ideal for strawberries & herbs.',
       redirectUrl:
@@ -856,9 +856,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       },
     ),
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     //  MAINTENANCE
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════════════════════════════════════════════════
     MarketplaceProduct(
       id: 'maint_1',
       name: 'pH Up & Down Solution Set',
@@ -867,9 +867,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 349,
       rating: 4.5,
       reviewCount: 634,
-      icon: 'âš—ï¸',
+      icon: '⚗️',
       description:
-          'Phosphoric acid (pH Down) and Potassium hydroxide (pH Up). Highly concentrated â€” 1ml per 10L.',
+          'Phosphoric acid (pH Down) and Potassium hydroxide (pH Up). Highly concentrated — 1ml per 10L.',
       redirectUrl:
           'https://www.amazon.in/s?k=ph+up+down+solution+hydroponic',
       source: 'amazon',
@@ -891,9 +891,9 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 120,
       rating: 4.2,
       reviewCount: 312,
-      icon: 'ðŸ§´',
+      icon: '🧴',
       description:
-          'Prevents root rot and kills pathogens. Use at 2â€“5 ml/L for system flush. Food-grade formula.',
+          'Prevents root rot and kills pathogens. Use at 2–5 ml/L for system flush. Food-grade formula.',
       redirectUrl:
           'https://www.amazon.in/s?k=hydrogen+peroxide+3+percent+hydroponic',
       source: 'amazon',
@@ -916,7 +916,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       originalPrice: 1100,
       rating: 4.8,
       reviewCount: 245,
-      icon: 'ðŸ¦ ',
+      icon: '🦠',
       description:
           'Bacillus amyloliquefaciens root inoculant. Prevents pythium root rot, boosts nutrient uptake.',
       redirectUrl:
@@ -938,7 +938,7 @@ final marketplaceProductsProvider = Provider<List<MarketplaceProduct>>((ref) {
       price: 399,
       rating: 4.4,
       reviewCount: 134,
-      icon: 'ðŸ’Ž',
+      icon: '💎',
       description:
           'Strengthens cell walls, improves heat/drought tolerance. Add to reservoir throughout growth.',
       redirectUrl:

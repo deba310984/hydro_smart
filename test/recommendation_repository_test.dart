@@ -20,7 +20,7 @@ void main() {
 
       expect(result, isA<RecommendationModel>());
       expect(result.recommendedCrop, 'Tomato');
-      expect(result.optimalTemperature, 25.0);
+      expect(result.temperatureRange['min'], 20.0);
     });
 
     test('getRecommendation returns Lettuce for low temperature', () async {
@@ -33,7 +33,7 @@ void main() {
 
       expect(result, isA<RecommendationModel>());
       expect(result.recommendedCrop, 'Lettuce');
-      expect(result.optimalTemperature, 18.0);
+      expect(result.temperatureRange['max'], 22.0);
     });
 
     test('getMultipleRecommendations returns requested count', () async {

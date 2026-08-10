@@ -1,0 +1,20 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle, draw, rounded corners, minimum width=3.2cm, minimum height=1.1cm, align=center, font=\small},
+  arrow/.style={-{Stealth}, thick}
+]
+\node[box, fill=cyan!12] (device) {Android / iOS\\Flutter APK};
+\node[box, fill=yellow!15, right=1.8cm of device] (render) {Render Cloud\\FastAPI + Gunicorn};
+\node[box, fill=green!12, below=1.2cm of device] (fb) {Google Firebase\\Auth, Firestore, RTDB};
+\node[box, fill=orange!12, right=1.8cm of render] (flaskhost) {Flask Host\\(optional)};
+\node[box, fill=violet!10, above=1.2cm of render] (gemini) {Google AI\\Gemini 2.0};
+
+\draw[arrow] (device) -- node[above, font=\scriptsize]{HTTPS} (render);
+\draw[arrow] (device) -- node[left, font=\scriptsize]{SDK} (fb);
+\draw[arrow] (device) -- node[above, font=\scriptsize]{REST} (flaskhost);
+\draw[arrow] (device) -- node[above, font=\scriptsize]{API} (gemini);
+\end{tikzpicture}
+\caption{Deployment architecture showing distribution of the mobile client, managed Firebase services, containerized machine-learning inference, and optional rule-based backend.}
+\label{fig:deployment_architecture}
+\end{figure}

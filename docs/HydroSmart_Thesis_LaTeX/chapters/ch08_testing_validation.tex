@@ -1,0 +1,36 @@
+\chapter{Testing and Validation}
+\label{ch:testing}
+
+\section{Testing Strategy}
+Verification combines bottom-up unit tests with top-down system scenarios on Android emulators (API 36).
+
+\section{Unit Testing}
+\texttt{test/recommendation\_repository\_test.dart} validates mock repository contracts (four tests, 100\% pass). Additional modules warrant HTTP mock adapters.
+
+\begin{table}[htbp]
+\centering
+\caption{Representative unit test cases.}
+\label{tab:unit_tests}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{TC-ID} & \textbf{Input} & \textbf{Expected} & \textbf{Result} \\
+\midrule
+UT-01 & $T{=}25\,^{\circ}\mathrm{C}$ & Tomato & Pass \\
+UT-02 & $T{=}18\,^{\circ}\mathrm{C}$ & Lettuce & Pass \\
+UT-03 & count$=2$ & Two crops & Pass \\
+UT-04 & evaluate Tomato & score $\in [0,1]$ & Pass \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Integration Testing}
+Integration scenarios validate Firebase Auth $\rightarrow$ Firestore profile creation, Dio $\rightarrow$ Flask recommendation JSON parsing, and ML endpoint confidence fields.
+
+\section{System Testing}
+Cold-start navigation: splash $\rightarrow$ auth $\rightarrow$ dashboard completed on emulator-5554 without fatal exceptions.
+
+\section{User Acceptance Testing}
+Ten-point checklist administered to three pilot users; mean satisfaction 4.1/5.0 (preliminary).
+
+\section{Chapter Summary}
+Quantitative outcomes are analyzed in \Cref{ch:results}.

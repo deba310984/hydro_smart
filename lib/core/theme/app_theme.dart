@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -64,19 +65,19 @@ class AppTheme {
       tertiary: saffron,
       surface: lotusWhite,
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,
       backgroundColor: royalPurple,
       foregroundColor: royalGold,
       surfaceTintColor: Colors.transparent,
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         color: royalGold,
         fontWeight: FontWeight.w600,
         fontSize: 20,
         letterSpacing: 0.8,
       ),
-      iconTheme: const IconThemeData(color: royalGold),
+      iconTheme: IconThemeData(color: royalGold),
     ),
     scaffoldBackgroundColor: creamWhite,
     cardTheme: CardThemeData(
@@ -218,9 +219,9 @@ class AppTheme {
       primary: royalGold,
       secondary: saffron,
       tertiary: peacockBlue,
-      surface: Color(0xFF1A1A2E),
+      surface: const Color(0xFF1A1A2E),
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,
       backgroundColor: Color(0xFF1A1A2E),
@@ -228,15 +229,15 @@ class AppTheme {
       titleTextStyle: TextStyle(
           color: royalGold, fontWeight: FontWeight.w600, fontSize: 20),
     ),
-    scaffoldBackgroundColor: Color(0xFF0F0F1A),
+    scaffoldBackgroundColor: const Color(0xFF0F0F1A),
     cardTheme: CardThemeData(
       elevation: 8,
-      color: Color(0xFF1A1A2E),
+      color: const Color(0xFF1A1A2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Color(0xFF252538),
+      fillColor: const Color(0xFF252538),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -244,12 +245,12 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: royalGold, width: 2),
+        borderSide: const BorderSide(color: royalGold, width: 2),
       ),
       labelStyle: TextStyle(color: royalGold.withOpacity(0.8)),
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(
+      titleLarge: const TextStyle(
           color: royalGold, fontWeight: FontWeight.w600, fontSize: 20),
       bodyLarge: TextStyle(color: Colors.grey[300], fontSize: 16),
       bodyMedium: TextStyle(color: Colors.grey[400], fontSize: 14),

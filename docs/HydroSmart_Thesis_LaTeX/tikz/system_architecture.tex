@@ -1,0 +1,34 @@
+% High-level system architecture (TikZ)
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=1.1cm and 1.6cm,
+  comp/.style={rectangle, draw=black!70, fill=blue!8, rounded corners=3pt,
+    minimum width=2.8cm, minimum height=1cm, align=center, font=\small},
+  cloud/.style={ellipse, draw=green!50!black, fill=green!10, minimum width=2.6cm,
+    minimum height=1cm, align=center, font=\small},
+  user/.style={rectangle, draw=orange!70, fill=orange!12, rounded corners=3pt,
+    minimum width=2.4cm, minimum height=0.9cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=2.2mm]}, thick}
+]
+\node[user] (farmer) {Farmer\\(Mobile Client)};
+\node[comp, right=of farmer] (flutter) {Flutter\\Presentation Layer};
+\node[comp, right=of flutter] (riverpod) {Riverpod\\State Management};
+\node[comp, below=of riverpod] (repos) {Repository\\Layer};
+\node[cloud, below=of repos] (firebase) {Firebase\\Auth, Firestore, RTDB};
+\node[comp, right=of repos, yshift=0.6cm] (flask) {Flask\\Rule Engine};
+\node[comp, right=of repos, yshift=-0.6cm] (ml) {FastAPI\\Random Forest};
+\node[cloud, right=of flask, yshift=-0.6cm] (gemini) {Gemini\\LLM API};
+
+\draw[arrow] (farmer) -- (flutter);
+\draw[arrow] (flutter) -- (riverpod);
+\draw[arrow] (riverpod) -- (repos);
+\draw[arrow] (repos) -- (firebase);
+\draw[arrow] (repos) -- (flask);
+\draw[arrow] (repos) -- (ml);
+\draw[arrow] (repos) -- (gemini);
+\draw[arrow, dashed] (firebase) -- node[above, font=\scriptsize]{sensors} (repos);
+\end{tikzpicture}
+\caption{High-level layered architecture of the \HydroSmart{} ecosystem illustrating separation between mobile presentation, application state, data access, cloud persistence, and external intelligence services.}
+\label{fig:high_level_architecture}
+\end{figure}

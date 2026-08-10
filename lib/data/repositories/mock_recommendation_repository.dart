@@ -1,7 +1,7 @@
 import 'package:hydro_smart/data/models/recommendation_model.dart';
 import 'package:hydro_smart/domain/repositories/recommendation_repository.dart';
 
-/// Mock implementation of RecommendationRepository
+/// Mock implementation of [RecommendationRepository] for offline demos and tests.
 class MockRecommendationRepository implements RecommendationRepository {
   @override
   Future<RecommendationModel> getRecommendation({
@@ -9,42 +9,43 @@ class MockRecommendationRepository implements RecommendationRepository {
     required double currentHumidity,
     required double currentPh,
     required double farmSize,
+    String? state,
+    int? month,
   }) async {
-    // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
 
-    // Simple logic to return different crops based on temp
     if (currentTemperature > 20) {
-      return RecommendationModel(
+      return _sample(
         id: 'mock_1',
-        recommendedCrop: 'Tomato',
-        reasoning: 'Temperature and humidity are optimal for tomatoes.',
-        optimalTemperature: 25.0,
-        optimalHumidity: 70.0,
-        optimalPh: 6.5,
-        optimalWaterLevel: 80.0,
-        growthDaysEstimate: 60.0,
-        difficulty: 'Medium',
-        benefits: const ['High yield', 'Popular market crop'],
-        challenges: const ['Requires support/staking', 'Sensitive to pests'],
-        timestamp: DateTime.now(), // This will be dynamic
-      );
-    } else {
-      return RecommendationModel(
-        id: 'mock_2',
-        recommendedCrop: 'Lettuce',
-        reasoning: 'Cooler temperature is perfect for lettuce.',
-        optimalTemperature: 18.0,
-        optimalHumidity: 60.0,
-        optimalPh: 6.0,
-        optimalWaterLevel: 70.0,
-        growthDaysEstimate: 30.0,
-        difficulty: 'Easy',
-        benefits: const ['Fast growth', 'Low light requirement'],
-        challenges: const ['Bolting in heat', 'Needs consistent water'],
-        timestamp: DateTime.now(), // This will be dynamic
+        crop: 'Tomato',
+        emoji: '🍅',
+        tempMin: 20,
+        tempMax: 28,
+        humidityMin: 60,
+        humidityMax: 80,
+        phMin: 5.8,
+        phMax: 6.8,
+        days: 60,
+        difficulty: 'intermediate',
+        description:
+            'Temperature and humidity are optimal for tomatoes in your setup.',
       );
     }
+
+    return _sample(
+      id: 'mock_2',
+      crop: 'Lettuce',
+      emoji: '🥬',
+      tempMin: 15,
+      tempMax: 22,
+      humidityMin: 50,
+      humidityMax: 70,
+      phMin: 5.5,
+      phMax: 6.5,
+      days: 30,
+      difficulty: 'beginner',
+      description: 'Cooler temperature is well suited for lettuce.',
+    );
   }
 
   @override
@@ -54,53 +55,59 @@ class MockRecommendationRepository implements RecommendationRepository {
     required double currentPh,
     required double farmSize,
     required int count,
+    String? state,
+    int? month,
+    String? category,
+    String? difficulty,
   }) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    return [
-      RecommendationModel(
+    final all = [
+      _sample(
         id: 'mock_1',
-        recommendedCrop: 'Tomato',
-        reasoning: 'Good match for warm conditions.',
-        optimalTemperature: 25.0,
-        optimalHumidity: 70.0,
-        optimalPh: 6.5,
-        optimalWaterLevel: 80.0,
-        growthDaysEstimate: 60.0,
-        difficulty: 'Medium',
-        benefits: const ['High yield', 'Popular'],
-        challenges: const ['Support needed'],
-        timestamp: DateTime.now(),
+        crop: 'Tomato',
+        emoji: '🍅',
+        tempMin: 20,
+        tempMax: 28,
+        humidityMin: 60,
+        humidityMax: 80,
+        phMin: 5.8,
+        phMax: 6.8,
+        days: 60,
+        difficulty: 'intermediate',
+        description: 'Good match for warm conditions.',
       ),
-      RecommendationModel(
+      _sample(
         id: 'mock_2',
-        recommendedCrop: 'Peppers',
-        reasoning: 'Also thrives in current setup.',
-        optimalTemperature: 26.0,
-        optimalHumidity: 65.0,
-        optimalPh: 6.8,
-        optimalWaterLevel: 75.0,
-        growthDaysEstimate: 70.0,
-        difficulty: 'Medium',
-        benefits: const ['High value', 'Colorful'],
-        challenges: const ['Slow start'],
-        timestamp: DateTime.now(),
+        crop: 'Peppers',
+        emoji: '🌶️',
+        tempMin: 22,
+        tempMax: 30,
+        humidityMin: 55,
+        humidityMax: 75,
+        phMin: 5.8,
+        phMax: 7.0,
+        days: 70,
+        difficulty: 'intermediate',
+        description: 'Also thrives in your current setup.',
       ),
-      RecommendationModel(
+      _sample(
         id: 'mock_3',
-        recommendedCrop: 'Cucumber',
-        reasoning: 'Alternative fast grower.',
-        optimalTemperature: 24.0,
-        optimalHumidity: 80.0,
-        optimalPh: 6.0,
-        optimalWaterLevel: 90.0,
-        growthDaysEstimate: 50.0,
-        difficulty: 'Easy',
-        benefits: const ['Fast harvest'],
-        challenges: const ['Needs space/trellis'],
-        timestamp: DateTime.now(),
+        crop: 'Cucumber',
+        emoji: '🥒',
+        tempMin: 18,
+        tempMax: 26,
+        humidityMin: 65,
+        humidityMax: 85,
+        phMin: 5.5,
+        phMax: 6.5,
+        days: 50,
+        difficulty: 'beginner',
+        description: 'Fast-growing alternative for hydroponic farms.',
       ),
-    ].take(count).toList();
+    ];
+
+    return all.take(count).toList();
   }
 
   @override
@@ -111,7 +118,42 @@ class MockRecommendationRepository implements RecommendationRepository {
     required double currentPh,
   }) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // Randomish score
     return 0.85;
+  }
+
+  static RecommendationModel _sample({
+    required String id,
+    required String crop,
+    required String emoji,
+    required double tempMin,
+    required double tempMax,
+    required double humidityMin,
+    required double humidityMax,
+    required double phMin,
+    required double phMax,
+    required int days,
+    required String difficulty,
+    required String description,
+  }) {
+    return RecommendationModel(
+      id: id,
+      recommendedCrop: crop,
+      cropEmoji: emoji,
+      category: 'vegetables',
+      description: description,
+      compatibilityScore: 85,
+      difficultyLevel: difficulty,
+      daysToHarvest: days,
+      yieldPerSqm: 8,
+      profitMargin: 35,
+      waterConsumption: 'medium',
+      marketDemand: 'high',
+      temperatureRange: {'min': tempMin, 'max': tempMax},
+      humidityRange: {'min': humidityMin, 'max': humidityMax},
+      phRange: {'min': phMin, 'max': phMax},
+      bestHydroponicSystems: const ['NFT', 'DWC'],
+      tips: const ['Monitor EC weekly', 'Ensure adequate airflow'],
+      timestamp: DateTime.now(),
+    );
   }
 }

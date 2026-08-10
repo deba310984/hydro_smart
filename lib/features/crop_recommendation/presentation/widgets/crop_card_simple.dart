@@ -5,7 +5,7 @@ class CropCard extends StatelessWidget {
   final Crop crop;
   final VoidCallback onTap;
 
-  const CropCard({
+  const CropCard({super.key, 
     required this.crop,
     required this.onTap,
   });
@@ -47,11 +47,11 @@ class CropCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       child: Card(
         elevation: 1,
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -61,9 +61,9 @@ class CropCard extends StatelessWidget {
                   // Crop Icon/Emoji
                   Text(
                     _getCropEmoji(),
-                    style: TextStyle(fontSize: 32),
+                    style: const TextStyle(fontSize: 32),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
                   // Crop Name
                   Expanded(
@@ -77,7 +77,7 @@ class CropCard extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
                             Text(
@@ -107,7 +107,7 @@ class CropCard extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Stats Row: Duration, Profit, Water
               Row(
@@ -134,7 +134,7 @@ class CropCard extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Select Crop Button
               SizedBox(
@@ -142,7 +142,7 @@ class CropCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onTap,
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     backgroundColor:
                         Theme.of(context).primaryColor.withOpacity(0.1),
                     elevation: 0,

@@ -41,10 +41,11 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       final latestVersion = await _updateService.checkForUpdates();
 
       if (latestVersion == null) {
+        // No update endpoint or no newer build — not a user-facing failure.
         state = state.copyWith(
-          status: UpdateStatus.error,
-          errorMessage:
-              'Failed to check for updates. Please check your internet connection.',
+          status: UpdateStatus.notAvailable,
+          availableVersion: null,
+          errorMessage: null,
         );
         return;
       }

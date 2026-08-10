@@ -5,7 +5,7 @@ class CropCard extends StatelessWidget {
   final Crop crop;
   final VoidCallback onTap;
 
-  const CropCard({
+  const CropCard({super.key, 
     required this.crop,
     required this.onTap,
   });
@@ -17,9 +17,9 @@ class CropCard extends StatelessWidget {
 
     return Card(
       elevation: 1,
-      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             // Top row: Emoji + Name + Risk Level
@@ -28,9 +28,9 @@ class CropCard extends StatelessWidget {
                 // Crop Emoji
                 Text(
                   _getCropEmoji(),
-                  style: TextStyle(fontSize: 32),
+                  style: const TextStyle(fontSize: 32),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
 
                 // Name + Risk Level
                 Expanded(
@@ -46,7 +46,7 @@ class CropCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           Text(
@@ -57,7 +57,7 @@ class CropCard extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 6,
                               vertical: 2,
                             ),
@@ -82,7 +82,7 @@ class CropCard extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Stats Row: Duration, Profit, Water
             Row(
@@ -109,22 +109,24 @@ class CropCard extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Select Button
             SizedBox(
               width: double.infinity,
-              height: 36,
+              height: 40,
               child: ElevatedButton(
                 onPressed: onTap,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Select Crop',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -147,17 +149,17 @@ class CropCard extends StatelessWidget {
   ) {
     return Column(
       children: [
-        Text(emoji, style: TextStyle(fontSize: 20)),
-        SizedBox(height: 4),
+        Text(emoji, style: const TextStyle(fontSize: 20)),
+        const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Text(
           label,
           style: TextStyle(

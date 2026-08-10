@@ -100,7 +100,7 @@ class TutorialSteps {
   static final GlobalKey subsidiesKey = GlobalKey();
 
   static List<TutorialStep> get homeScreenSteps => [
-        TutorialStep(
+        const TutorialStep(
           id: 'welcome',
           title: 'Welcome to HydroSmart! 🌱',
           description:
@@ -248,7 +248,7 @@ class TutorialSteps {
           featureIcon: Icons.account_balance,
           highlightColor: Colors.indigo,
         ),
-        TutorialStep(
+        const TutorialStep(
           id: 'complete',
           title: 'You\'re All Set! 🎉',
           description:

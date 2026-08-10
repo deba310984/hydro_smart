@@ -48,9 +48,20 @@ class MLCropService {
       final host = Platform.localHostname.toLowerCase();
       return host.contains('sdk') ||
           host.contains('emulator') ||
-          host.contains('generic');
+          host.contains('generic') ||
+          // Some emulator images report a bare "localhost"/"android" instead
+          // of the sdk_gphone-style hostname, which the checks above miss -
+          // in that case fall through to isPhysicalDeviceHostname below
+          // rather than silently defaulting to the physical-device URL.
+          host.isEmpty ||
+          host == 'localhost' ||
+          host == 'android';
     } catch (_) {
-      return false;
+      // If we can't read the hostname at all, assume emulator: it's the far
+      // more common case for a debug run than a real device reached via adb
+      // reverse, and 10.0.2.2 fails fast/harmlessly if that guess is wrong
+      // (the cloud fallback below covers it either way).
+      return true;
     }
   }
 
@@ -58,6 +69,44 @@ class MLCropService {
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
   ));
+
+  // Memoized once per app session: debug builds prefer a local backend for
+  // fast iteration, but probing it should never permanently break the
+  // feature when no local backend is running (the common case for anyone
+  // who hasn't started the Python service) - so we do one quick reachability
+  // probe and fall back to the cloud URL if it fails.
+  static String? _resolvedBaseUrl;
+
+  static Future<String> _resolveBaseUrl() async {
+    final cached = _resolvedBaseUrl;
+    if (cached != null) return cached;
+
+    if (_envUrl.isNotEmpty) return _resolvedBaseUrl = _envUrl;
+
+    const bool isRelease = bool.fromEnvironment('dart.vm.product');
+    const bool isProfile = bool.fromEnvironment('dart.vm.profile');
+    if (isRelease || isProfile) return _resolvedBaseUrl = _cloudUrl;
+
+    final localCandidate =
+        _isLikelyEmulator ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
+    try {
+      final response = await Dio().get(
+        '$localCandidate/health',
+        options: Options(
+          receiveTimeout: const Duration(seconds: 2),
+          sendTimeout: const Duration(seconds: 2),
+        ),
+      );
+      if (response.statusCode == 200) {
+        print('[ML] Local backend reachable at $localCandidate');
+        return _resolvedBaseUrl = localCandidate;
+      }
+    } catch (_) {
+      // No local backend running - fall back to cloud below.
+    }
+    print('[ML] Local backend not reachable, using cloud: $_cloudUrl');
+    return _resolvedBaseUrl = _cloudUrl;
+  }
 
   /// Predict the single best crop.
   static Future<MLPrediction> predict({
@@ -67,11 +116,12 @@ class MLCropService {
     required int month,
   }) async {
     try {
+      final baseUrl = await _resolveBaseUrl();
       print('[ML] Requesting prediction: temp=$temperature, hum=$humidity, '
-          'loc=$location, month=$month → $_baseUrl/predict');
+          'loc=$location, month=$month → $baseUrl/predict');
 
       final response = await _dio.post(
-        '$_baseUrl/predict',
+        '$baseUrl/predict',
         data: {
           'temperature': temperature,
           'humidity': humidity,
@@ -103,8 +153,9 @@ class MLCropService {
     int n = 5,
   }) async {
     try {
+      final baseUrl = await _resolveBaseUrl();
       final response = await _dio.post(
-        '$_baseUrl/predict/top?n=$n',
+        '$baseUrl/predict/top?n=$n',
         data: {
           'temperature': temperature,
           'humidity': humidity,
@@ -128,8 +179,9 @@ class MLCropService {
   /// Check if the ML backend is reachable and healthy.
   static Future<bool> isHealthy() async {
     try {
+      final baseUrl = await _resolveBaseUrl();
       final response = await _dio.get(
-        '$_baseUrl/health',
+        '$baseUrl/health',
         options: Options(
           receiveTimeout: const Duration(seconds: 5),
         ),
@@ -140,7 +192,9 @@ class MLCropService {
     }
   }
 
-  /// Get the base URL being used.
+  /// Get the base URL being used (unresolved candidate - see
+  /// [_resolveBaseUrl] for the actual URL used by requests, which may fall
+  /// back to the cloud URL if this local candidate isn't reachable).
   static String get baseUrl => _baseUrl;
 }
 

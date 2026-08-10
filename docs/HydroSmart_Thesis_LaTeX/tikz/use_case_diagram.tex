@@ -1,0 +1,28 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  actor/.style={rectangle, draw, fill=gray!10, minimum height=2.2cm, minimum width=0.9cm},
+  uc/.style={ellipse, draw=blue!60, fill=blue!5, minimum width=2.6cm, minimum height=0.85cm, align=center, font=\scriptsize},
+  system/.style={rectangle, draw=black!60, dashed, inner sep=0.5cm}
+]
+\node[actor] (farmer) at (-4,0) {\rotatebox{90}{Farmer}};
+\node[actor] (admin) at (4,0) {\rotatebox{90}{Administrator}};
+\begin{scope}[local bounding box=sys]
+\node[uc] (uc1) at (0,2.2) {Authenticate};
+\node[uc] (uc2) at (0,1.2) {View Sensors};
+\node[uc] (uc3) at (0,0.2) {Get Crop\\Recommendation};
+\node[uc] (uc4) at (0,-0.8) {Chat with\\AI Advisor};
+\node[uc] (uc5) at (0,-1.8) {Manage\\Finance};
+\node[uc] (uc6) at (0,-2.8) {Browse\\Subsidies};
+\end{scope}
+\node[system, fit=(uc1)(uc6), label=above:\textbf{HydroSmart System}] (box) {};
+\draw (farmer.east) -- (uc2.west);
+\draw (farmer.east) -- (uc3.west);
+\draw (farmer.east) -- (uc4.west);
+\draw (farmer.east) -- (uc5.west);
+\draw (admin.west) -- (uc1.east);
+\draw (admin.west) -- (uc6.east);
+\end{tikzpicture}
+\caption{Use case diagram depicting primary functional interactions between farmers, administrators, and the \HydroSmart{} platform.}
+\label{fig:use_case_diagram}
+\end{figure}

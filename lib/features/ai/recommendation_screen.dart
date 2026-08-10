@@ -1253,7 +1253,7 @@ class _LoadingState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: const Color(0xFF4A2C7C)),
+          const CircularProgressIndicator(color: Color(0xFF4A2C7C)),
           const SizedBox(height: 16),
           Text(
             'Analyzing conditions & finding best crops...',

@@ -103,6 +103,30 @@ class FinanceRepository {
       }, SetOptions(merge: true));
     }
   }
+
+  Future<void> updateCustomGSTRate(String userId, double rate) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('finance')
+          .doc('monthly')
+          .update({
+        'customOtherGSTRate': rate,
+        'lastUpdated': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('finance')
+          .doc('monthly')
+          .set({
+        'customOtherGSTRate': rate,
+        'lastUpdated': DateTime.now().toIso8601String(),
+      }, SetOptions(merge: true));
+    }
+  }
 }
 
 class FinanceController extends StateNotifier<AsyncValue<void>> {
@@ -138,5 +162,18 @@ class FinanceController extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     state =
         await AsyncValue.guard(() => _repository.updateRevenue(userId, amount));
+  }
+
+  Future<void> updateCustomGSTRate(String userId, double rate) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+        () => _repository.updateCustomGSTRate(userId, rate));
+  }
+
+  Future<void> updateExpense(
+      String userId, String expenseType, double amount) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+        () => _repository.updateExpense(userId, expenseType, amount));
   }
 }

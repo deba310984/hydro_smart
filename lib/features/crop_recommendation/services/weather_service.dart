@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:geolocator/geolocator.dart';
 import '../models/weather_model.dart';
 import 'location_service.dart';
 

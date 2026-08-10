@@ -532,6 +532,17 @@ class _CropDetailPageState extends ConsumerState<CropDetailPage>
     );
   }
 
+  /// Formats a rupee value for a chart axis label. Values below ₹1000 are
+  /// shown as-is (e.g. "₹158") instead of being divided by 1000 and rounded
+  /// to "₹0k" - the crop data here is often in the tens/hundreds range, well
+  /// under the threshold where a "k" abbreviation is meaningful.
+  String _formatAxisCurrency(double value) {
+    if (value.abs() >= 1000) {
+      return '₹${(value / 1000).toStringAsFixed(1)}k';
+    }
+    return '₹${value.toStringAsFixed(0)}';
+  }
+
   Widget _buildRevenueCostChart() {
     final months = [
       'Jan',
@@ -606,7 +617,7 @@ class _CropDetailPageState extends ConsumerState<CropDetailPage>
                 reservedSize: 42,
                 getTitlesWidget: (value, meta) {
                   return Text(
-                    '₹${(value / 1000).toStringAsFixed(0)}k',
+                    _formatAxisCurrency(value),
                     style: TextStyle(fontSize: 9, color: Colors.grey[500]),
                   );
                 },
@@ -1136,7 +1147,7 @@ class _CropDetailPageState extends ConsumerState<CropDetailPage>
                 showTitles: true,
                 reservedSize: 42,
                 getTitlesWidget: (value, meta) {
-                  return Text('₹${(value / 1000).toStringAsFixed(0)}k',
+                  return Text(_formatAxisCurrency(value),
                       style: TextStyle(fontSize: 9, color: Colors.grey[500]));
                 },
               ),
