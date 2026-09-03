@@ -22,9 +22,19 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // On Android the native SDK auto-creates the [DEFAULT] app from
+    // google-services.json before Dart runs, and hot restart keeps it
+    // alive across Dart teardown. Either way a second initializeApp
+    // throws [core/duplicate-app], so treat an existing app as success.
+    try {
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+    } on FirebaseException catch (e) {
+      if (e.code != 'duplicate-app') rethrow;
+    }
 
     if (kIsWeb) {
       await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);

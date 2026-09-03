@@ -15,6 +15,17 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
+/// Realtime Database URL used for live ESP32 sensor streaming.
+///
+/// IMPORTANT: this must match the region your Realtime Database was
+/// created in. Copy it from Firebase Console > Realtime Database, the
+/// URL shown above the data tree. Common shapes:
+///   US      https://<project>-default-rtdb.firebaseio.com
+///   Asia    https://<project>-default-rtdb.asia-southeast1.firebasedatabase.app
+///   Europe  https://<project>-default-rtdb.europe-west1.firebasedatabase.app
+const String kHydroSmartDatabaseUrl =
+    'https://hydroappsmart-default-rtdb.asia-southeast1.firebasedatabase.app';
+
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -46,6 +57,7 @@ class DefaultFirebaseOptions {
     appId: '1:738579176126:web:b9738edbd2854b56595cef',
     messagingSenderId: '738579176126',
     projectId: 'hydroappsmart',
+    databaseURL: kHydroSmartDatabaseUrl,
     authDomain: 'hydroappsmart.firebaseapp.com',
     storageBucket: 'hydroappsmart.firebasestorage.app',
     measurementId: 'G-1JJB9XPJX8',
@@ -56,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:738579176126:android:5069a79abfd32e6c595cef',
     messagingSenderId: '738579176126',
     projectId: 'hydroappsmart',
+    databaseURL: kHydroSmartDatabaseUrl,
     storageBucket: 'hydroappsmart.firebasestorage.app',
   );
 
@@ -64,6 +77,7 @@ class DefaultFirebaseOptions {
     appId: '1:738579176126:ios:3a522bef6ab5f3d5595cef',
     messagingSenderId: '738579176126',
     projectId: 'hydroappsmart',
+    databaseURL: kHydroSmartDatabaseUrl,
     storageBucket: 'hydroappsmart.firebasestorage.app',
     iosBundleId: 'com.example.hydroSmart',
   );
@@ -73,6 +87,7 @@ class DefaultFirebaseOptions {
     appId: '1:738579176126:ios:3a522bef6ab5f3d5595cef',
     messagingSenderId: '738579176126',
     projectId: 'hydroappsmart',
+    databaseURL: kHydroSmartDatabaseUrl,
     storageBucket: 'hydroappsmart.firebasestorage.app',
     iosBundleId: 'com.example.hydroSmart',
   );
@@ -82,6 +97,7 @@ class DefaultFirebaseOptions {
     appId: '1:738579176126:web:77fe83e0601d76d4595cef',
     messagingSenderId: '738579176126',
     projectId: 'hydroappsmart',
+    databaseURL: kHydroSmartDatabaseUrl,
     authDomain: 'hydroappsmart.firebaseapp.com',
     storageBucket: 'hydroappsmart.firebasestorage.app',
     measurementId: 'G-BVRNL6CYYM',

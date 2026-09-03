@@ -311,7 +311,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         ),
         const SizedBox(height: 24),
         Text(
-          _selectedLanguage == 'EN' ? 'Digital Krishi' : 'डिजिटल कृषि',
+          // Brand name - kept in Latin script in both languages so it
+          // matches the splash screen and the app's identity everywhere.
+          'HydroSmart',
           style: KrishiTheme.displayLarge.copyWith(
             color: KrishiTheme.goldenWheat,
             fontSize: 32,

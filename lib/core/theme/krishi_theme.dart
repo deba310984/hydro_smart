@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Digital Krishi - Professional Indian Agriculture Theme
+/// HydroSmart - Professional Indian Agriculture Theme
 /// A high-end "Modern Earth" palette designed for AgTech applications
 class KrishiTheme {
   // ═══════════════════════════════════════════════════════════════════

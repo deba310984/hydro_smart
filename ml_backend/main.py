@@ -138,10 +138,11 @@ def _encode_location(location: str) -> tuple[int, str]:
         if location.lower() in k.lower() or k.lower() in location.lower():
             return int(le_location.transform([k])[0]), k
 
-    # Default to most common location
-    default_loc = known[0]
-    logger.warning(f"Unknown location '{location}', defaulting to '{default_loc}'")
-    return int(le_location.transform([default_loc])[0]), default_loc
+    # Genuinely unknown (e.g. a user outside India). Signal this with -1 so
+    # the caller marginalises over every known location rather than pinning
+    # the prediction to one arbitrary state, which skewed results badly.
+    logger.info(f"Unknown location '{location}', using climate-only prediction")
+    return -1, "Climate-based (location not recognised)"
 
 
 def _predict(req: PredictRequest) -> tuple[np.ndarray, str]:
@@ -151,23 +152,45 @@ def _predict(req: PredictRequest) -> tuple[np.ndarray, str]:
 
     loc_enc, loc_used = _encode_location(req.location)
 
-    # Engineered features (must match training feature order)
+    # Engineered features (must match training feature order exactly)
+    t = float(req.temperature)
+    h = float(req.humidity)
     month_sin = float(np.sin(2 * np.pi * req.month / 12))
     month_cos = float(np.cos(2 * np.pi * req.month / 12))
-    temp_hum_interaction = req.temperature * req.humidity / 100
+    temp_hum_interaction = t * h / 100
+
+    # Dew point (Magnus formula) and vapour pressure deficit - VPD is the
+    # dominant driver of transpiration in controlled-environment growing
+    # and is the strongest climate feature the model has after humidity.
+    rh = min(max(h, 1.0), 100.0)
+    alpha = (17.27 * t) / (237.7 + t) + np.log(rh / 100.0)
+    dew_point = float((237.7 * alpha) / (17.27 - alpha))
+    svp = 0.6108 * np.exp((17.27 * t) / (t + 237.3))
+    vpd = float(svp * (1 - rh / 100.0))
 
     # Feature order: temperature, humidity, location_enc, month,
-    #                month_sin, month_cos, temp_hum_interaction
-    features = np.array([[
-        req.temperature, req.humidity, loc_enc, req.month,
-        month_sin, month_cos, temp_hum_interaction,
-    ]])
+    #                month_sin, month_cos, temp_hum_interaction,
+    #                dew_point, vpd
+    def _row(loc_code: int) -> list:
+        return [t, h, loc_code, req.month,
+                month_sin, month_cos, temp_hum_interaction,
+                dew_point, vpd]
 
-    # Scale the same indices used during training
+    if loc_enc < 0:
+        # Unrecognised location: marginalise the location out by averaging
+        # the prediction over every location the model knows. That answers
+        # "what suits this climate?" instead of silently assuming one state.
+        n_locs = len(MODEL_DATA["label_encoder_location"].classes_)
+        features = np.array([_row(i) for i in range(n_locs)], dtype=float)
+    else:
+        features = np.array([_row(loc_enc)], dtype=float)
+
+    # Scale the same indices used during training. The stored list is the
+    # authority - every numeric column is scaled, location_enc is not.
     scale_indices = MODEL_DATA.get("scale_indices", [0, 1, 6])
     features[:, scale_indices] = scaler.transform(features[:, scale_indices])
 
-    probas = model.predict_proba(features)[0]
+    probas = model.predict_proba(features).mean(axis=0)
     return probas, loc_used
 
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydro_smart/features/sensors/sensor_provider.dart';
+import 'package:hydro_smart/features/sensors/widgets/live_ph_card.dart';
 import 'package:hydro_smart/features/auth/auth_controller.dart';
 import 'package:hydro_smart/features/farm/farm_controller.dart';
 import 'package:hydro_smart/features/subsidy/subsidy_screen.dart';
@@ -46,7 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // Global keys for tutorial targeting
   final GlobalKey _profileHeaderKey = GlobalKey();
   final GlobalKey _mandiTrackerKey = GlobalKey();
-  final GlobalKey _soilHealthKey = GlobalKey();
+  final GlobalKey _livePhKey = GlobalKey();
   final GlobalKey _cropAdvisorKey = GlobalKey();
   final GlobalKey _financeKey = GlobalKey();
   final GlobalKey _marketplaceKey = GlobalKey();
@@ -145,19 +146,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         highlightColor: Colors.green,
       ),
       TutorialStep(
-        id: 'soil_health',
-        title: 'Soil Health Monitor',
+        id: 'live_ph',
+        title: 'Live pH Monitor',
         description:
-            'Keep track of your soil\'s pH level, nutrients (N-P-K), and moisture. Healthy soil means healthy crops!',
-        titleHindi: 'मिट्टी स्वास्थ्य मॉनिटर',
+            'Your ESP32 sensor streams the nutrient solution pH here in real time. Green means it is in the ideal 5.5-6.5 range for nutrient uptake.',
+        titleHindi: 'लाइव pH मॉनिटर',
         descriptionHindi:
-            'अपनी मिट्टी का pH, पोषक तत्व (N-P-K), और नमी देखें। स्वस्थ मिट्टी = स्वस्थ फसल!',
-        targetKey: _soilHealthKey,
+            'आपका ESP32 सेंसर यहाँ रियल-टाइम pH दिखाता है। हरा = 5.5-6.5 आदर्श स्तर।',
+        targetKey: _livePhKey,
         characterPosition: Alignment.topCenter,
         emotion: CharacterEmotion.thinking,
         gesture: CharacterGesture.explain,
-        featureIcon: Icons.grass,
-        highlightColor: Colors.brown,
+        featureIcon: Icons.science_rounded,
+        highlightColor: Colors.green,
       ),
       TutorialStep(
         id: 'crop_advisor',
@@ -694,17 +695,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Featured card - Soil Health
+                                // Live pH straight from the paired ESP32
                                 Container(
-                                  key: _soilHealthKey,
-                                  child: const SoilHealthCard(
-                                    ph: 6.8,
-                                    nitrogen: 72,
-                                    phosphorus: 58,
-                                    potassium: 85,
-                                    moisture: 48,
-                                    lastUpdated: 'Today, 10:30 AM',
-                                  ),
+                                  key: _livePhKey,
+                                  child: LivePhCard(
+                                      currentLanguage: _currentLanguage),
                                 ),
                                 const SizedBox(height: 24),
                                 Text(
@@ -957,17 +952,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Soil Health Card
-                                      SoilHealthCard(
-                                        ph: (sensorData['ph'] ?? 6.5)
-                                            .toDouble(),
-                                        nitrogen: 72,
-                                        phosphorus: 58,
-                                        potassium: 85,
-                                        moisture: (sensorData['humidity'] ?? 45)
-                                            .toDouble(),
-                                        lastUpdated: 'Live',
-                                      ),
+                                      // Live pH straight from the paired ESP32
+                                      LivePhCard(
+                                          currentLanguage: _currentLanguage),
                                       const SizedBox(height: 24),
                                       Text(
                                         _currentLanguage == 'EN'

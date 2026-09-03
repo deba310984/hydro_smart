@@ -49,3 +49,4 @@ ml_backend/*.pkl
 ml_backend/__pycache__/
 backend/firebase-credentials.json
 backend/__pycache__/
+hardware/esp32_ph_sensor/secrets.h

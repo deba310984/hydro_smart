@@ -66,70 +66,99 @@ class _SubsidyScreenState extends ConsumerState<SubsidyScreen> {
             floating: true,
             pinned: true,
             backgroundColor: AppTheme.royalPurple,
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Government Subsidies',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppTheme.royalPurple, AppTheme.royalMaroon],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 48),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.royalGold.withOpacity(0.25),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.currency_rupee,
-                                  color: AppTheme.royalGold, size: 16),
-                              SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  'Save up to 80% on Your Hydroponics Setup',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Explore government schemes for farmers',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+            flexibleSpace: LayoutBuilder(
+              builder: (context, constraints) {
+                // A FlexibleSpaceBar title travels from the bottom of the
+                // expanded header up to the toolbar as the user scrolls,
+                // cutting straight through the background content on the
+                // way. So the heading lives in the background instead, and
+                // the toolbar title only fades in once actually collapsed.
+                final collapsedHeight =
+                    MediaQuery.of(context).padding.top + kToolbarHeight;
+                final isCollapsed =
+                    constraints.biggest.height <= collapsedHeight + 12;
+
+                return FlexibleSpaceBar(
+                  titlePadding:
+                      const EdgeInsetsDirectional.only(start: 56, bottom: 16),
+                  title: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    opacity: isCollapsed ? 1.0 : 0.0,
+                    child: const Text(
+                      'Government Subsidies',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                  background: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppTheme.royalPurple, AppTheme.royalMaroon],
+                      ),
+                    ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.royalGold.withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.currency_rupee,
+                                      color: AppTheme.royalGold, size: 16),
+                                  SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      'Save up to 80% on Your Hydroponics Setup',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Government Subsidies',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Explore government schemes for farmers',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           // Filters
