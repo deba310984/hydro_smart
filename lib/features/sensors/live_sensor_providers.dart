@@ -16,6 +16,15 @@ const Duration kSensorStaleAfter = Duration(seconds: 60);
 ///   devices/<deviceId>/live
 String liveSensorPath(String deviceId) => 'devices/$deviceId/live';
 
+/// Presentation override, written by the demo control page rather than the
+/// device: devices/<deviceId>/demo  { enabled: bool, ph: number }
+///
+/// This exists so the app's pH bands can be shown during a demonstration
+/// without altering the solution chemistry. It never touches the live node,
+/// so real telemetry keeps flowing underneath, and the UI labels any
+/// overridden reading as DEMO so it is not mistaken for a measurement.
+String demoOverridePath(String deviceId) => 'devices/$deviceId/demo';
+
 // ─────────────────────────────────────────────────────────
 // pH classification
 // ─────────────────────────────────────────────────────────
@@ -72,6 +81,9 @@ class LiveSensorReading {
   final int? rssi;
   final String? firmware;
 
+  /// True when the value came from the manual demo override, not the device.
+  final bool isDemo;
+
   const LiveSensorReading({
     this.ph,
     this.temperature,
@@ -81,9 +93,24 @@ class LiveSensorReading {
     this.updatedAt,
     this.rssi,
     this.firmware,
+    this.isDemo = false,
   });
 
   static const empty = LiveSensorReading();
+
+  LiveSensorReading asDemo(double overridePh) => LiveSensorReading(
+        ph: overridePh,
+        temperature: temperature,
+        humidity: humidity,
+        ec: ec,
+        waterLevel: waterLevel,
+        // Keep the device's own timestamp so freshness and the online dot
+        // still reflect the real hardware, not the override.
+        updatedAt: updatedAt,
+        rssi: rssi,
+        firmware: firmware,
+        isDemo: true,
+      );
 
   bool get hasData => ph != null || temperature != null || humidity != null;
 
@@ -182,21 +209,38 @@ final deviceIdProvider =
 /// Streams the newest reading for a device straight from Realtime Database.
 /// RTDB pushes changes over an open socket, so the UI updates the moment the
 /// ESP32 writes - no polling.
+/// Pin the instance to the explicit regional URL. FirebaseDatabase.instance
+/// resolves from whatever the platform app was configured with, which
+/// silently points at the wrong region if google-services.json and
+/// firebase_options.dart ever disagree.
+FirebaseDatabase _db() => FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL: kHydroSmartDatabaseUrl,
+    );
+
 final liveSensorStreamProvider =
     StreamProvider.family<LiveSensorReading, String>((ref, deviceId) {
-  // Pin the instance to the explicit regional URL. FirebaseDatabase
-  // .instance resolves from whatever the platform app was configured
-  // with, which silently points at the wrong region if google-services
-  // .json and firebase_options.dart ever disagree.
-  final db = FirebaseDatabase.instanceFor(
-    app: Firebase.app(),
-    databaseURL: kHydroSmartDatabaseUrl,
-  );
-  final ref0 = db.ref(liveSensorPath(deviceId));
+  final ref0 = _db().ref(liveSensorPath(deviceId));
   return ref0.onValue.map((event) {
     final value = event.snapshot.value;
     if (value is Map) return LiveSensorReading.fromRtdb(value);
     return LiveSensorReading.empty;
+  });
+});
+
+/// Streams the manual demo override. Returns null when the override is
+/// absent or disabled, which is the normal state.
+final demoOverrideStreamProvider =
+    StreamProvider.family<double?, String>((ref, deviceId) {
+  final ref0 = _db().ref(demoOverridePath(deviceId));
+  return ref0.onValue.map((event) {
+    final v = event.snapshot.value;
+    if (v is! Map) return null;
+    if (v['enabled'] != true) return null;
+    final raw = v['ph'];
+    final ph = raw is num ? raw.toDouble() : double.tryParse('$raw');
+    if (ph == null || ph < 0 || ph > 14) return null;
+    return ph;
   });
 });
 
@@ -213,5 +257,13 @@ final currentLiveReadingProvider = Provider<AsyncValue<LiveSensorReading>?>((ref
   final deviceId = ref.watch(deviceIdProvider);
   if (deviceId == null || deviceId.isEmpty) return null;
   ref.watch(sensorClockProvider);
-  return ref.watch(liveSensorStreamProvider(deviceId));
+
+  final live = ref.watch(liveSensorStreamProvider(deviceId));
+  final override = ref.watch(demoOverrideStreamProvider(deviceId)).valueOrNull;
+  if (override == null) return live;
+
+  // Override only substitutes the pH value. Freshness, RSSI and the
+  // online dot still come from the device, so the card cannot claim a
+  // dead sensor is alive just because a demo value was set.
+  return live.whenData((r) => r.asDemo(override));
 });

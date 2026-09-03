@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydro Smart - pH Demo Control</title>
+<style>
+  :root {
+    --green:#2E7D32; --gold:#D4AF37; --soil:#1B3A1F;
+    --parchment:#FDF4E3; --grey:#5A6B5C; --red:#C62828;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; padding:24px 16px; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:var(--parchment); color:var(--soil);
+    display:flex; justify-content:center;
+  }
+  .wrap { width:100%; max-width:460px; }
+  h1 { font-size:22px; margin:0 0 4px; color:var(--green); }
+  .sub { font-size:13px; color:var(--grey); margin:0 0 20px; }
+  .card {
+    background:#fff; border-radius:14px; padding:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,.07); margin-bottom:16px;
+  }
+  label { display:block; font-size:12px; color:var(--grey); margin-bottom:6px; }
+  input[type=text] {
+    width:100%; padding:10px 12px; font-size:15px;
+    border:1px solid #cfd8cf; border-radius:9px; font-family:inherit;
+  }
+  .btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px; }
+  button {
+    padding:14px 10px; font-size:15px; font-weight:600; font-family:inherit;
+    border:0; border-radius:11px; cursor:pointer; color:#fff;
+    transition:transform .06s ease, filter .15s ease;
+  }
+  button:hover { filter:brightness(1.07); }
+  button:active { transform:scale(.97); }
+  button .v { display:block; font-size:11px; font-weight:500; opacity:.85; margin-top:2px; }
+  .acid { background:var(--red); }
+  .opt  { background:var(--green); }
+  .slight { background:#C9A227; }
+  .alk  { background:var(--red); }
+  .off {
+    background:#fff; color:var(--soil); border:1.5px solid #cfd8cf;
+    grid-column:1 / -1; margin-top:2px;
+  }
+  .row { display:flex; align-items:center; gap:10px; margin-top:14px; }
+  .row input[type=range] { flex:1; }
+  .row .num { font-variant-numeric:tabular-nums; font-weight:700; min-width:44px; text-align:right; }
+  #status {
+    font-size:13px; padding:11px 13px; border-radius:9px; margin-top:4px;
+    background:#eef3ee; color:var(--grey);
+  }
+  #status.ok  { background:#e6f4e6; color:#1B5E20; }
+  #status.err { background:#fdecea; color:#9c1c14; }
+  .note { font-size:12px; color:var(--grey); line-height:1.55; }
+  .note b { color:var(--soil); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>pH Demo Control</h1>
+  <p class="sub">Overrides the value shown in the Hydro Smart app. The sensor
+  keeps publishing underneath &mdash; nothing is overwritten.</p>
+
+  <div class="card">
+    <label for="dev">Device ID (must match the app)</label>
+    <input id="dev" type="text" value="hydro-smart-01" spellcheck="false">
+  </div>
+
+  <div class="card">
+    <div class="btns">
+      <button class="acid"   onclick="setPh(4.5)">Acidic<span class="v">pH 4.5</span></button>
+      <button class="opt"    onclick="setPh(6.0)">Optimal<span class="v">pH 6.0</span></button>
+      <button class="slight" onclick="setPh(7.0)">Slightly Alkaline<span class="v">pH 7.0</span></button>
+      <button class="alk"    onclick="setPh(8.5)">Alkaline<span class="v">pH 8.5</span></button>
+      <button class="off"    onclick="clearOverride()">Turn off override &mdash; back to live sensor</button>
+    </div>
+
+    <div class="row">
+      <input id="slider" type="range" min="0" max="14" step="0.1" value="6.0"
+             oninput="document.getElementById('sv').textContent=(+this.value).toFixed(1)">
+      <span class="num" id="sv">6.0</span>
+      <button class="opt" style="padding:10px 14px" onclick="setPh(+document.getElementById('slider').value)">Set</button>
+    </div>
+  </div>
+
+  <div id="status">Connecting&hellip;</div>
+
+  <div class="card" style="margin-top:16px">
+    <p class="note">
+      <b>For demonstration only.</b> Any overridden reading is labelled
+      <b>DEMO</b> in the app, so it is not presented as a real measurement.
+      Freshness and the online indicator still come from the device.
+      Press <b>Turn off override</b> to return to live sensor data.
+    </p>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getDatabase, ref, set, remove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+// Public Firebase client config - same values already shipped in the app.
+const app = initializeApp({
+  apiKey: 'AIzaSyDE4NqZAUph-e5-NFXLng9gh-fuwzmwQiM',
+  authDomain: 'hydroappsmart.firebaseapp.com',
+  projectId: 'hydroappsmart',
+  databaseURL: 'https://hydroappsmart-default-rtdb.asia-southeast1.firebasedatabase.app',
+  appId: '1:738579176126:android:5069a79abfd32e6c595cef',
+  messagingSenderId: '738579176126',
+});
+
+const db = getDatabase(app);
+const statusEl = document.getElementById('status');
+let ready = false;
+
+function say(msg, cls) {
+  statusEl.textContent = msg;
+  statusEl.className = cls || '';
+}
+
+// Database rules require an authenticated principal; anonymous is enough.
+signInAnonymously(getAuth(app))
+  .then(() => { ready = true; say('Connected. Ready.', 'ok'); })
+  .catch((e) => say('Sign-in failed: ' + e.message, 'err'));
+
+const deviceId = () => document.getElementById('dev').value.trim();
+
+window.setPh = async (ph) => {
+  if (!ready) return say('Still connecting, try again in a moment.', 'err');
+  const id = deviceId();
+  if (!id) return say('Enter a device ID first.', 'err');
+  try {
+    await set(ref(db, `devices/${id}/demo`), { enabled: true, ph });
+    say(`Override active - showing pH ${ph.toFixed(1)}`, 'ok');
+  } catch (e) {
+    say('Write failed: ' + e.message, 'err');
+  }
+};
+
+window.clearOverride = async () => {
+  if (!ready) return say('Still connecting, try again in a moment.', 'err');
+  const id = deviceId();
+  if (!id) return say('Enter a device ID first.', 'err');
+  try {
+    await remove(ref(db, `devices/${id}/demo`));
+    say('Override off - app is back on live sensor data.', 'ok');
+  } catch (e) {
+    say('Write failed: ' + e.message, 'err');
+  }
+};
+</script>
+</body>
+</html>

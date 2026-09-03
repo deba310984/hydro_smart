@@ -188,6 +188,7 @@ class LivePhCard extends ConsumerWidget {
     final subtitle = online
         ? '$deviceId$freshness'
         : '$deviceId - ${isHindi ? 'ऑफ़लाइन' : 'offline'}$freshness';
+    final isDemo = reading?.isDemo ?? false;
 
     return Container(
       width: double.infinity,
@@ -217,10 +218,35 @@ class LivePhCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      isHindi ? 'लाइव pH' : 'Live pH',
-                      style: KrishiTheme.titleLarge.copyWith(
-                          color: KrishiTheme.deepSoil, fontSize: 16),
+                    Row(
+                      children: [
+                        Text(
+                          isHindi ? 'लाइव pH' : 'Live pH',
+                          style: KrishiTheme.titleLarge.copyWith(
+                              color: KrishiTheme.deepSoil, fontSize: 16),
+                        ),
+                        // Overridden values are labelled so a demo reading is
+                        // never mistaken for a real measurement.
+                        if (isDemo) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: KrishiTheme.goldenWheat.withOpacity(0.22),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              'DEMO',
+                              style: KrishiTheme.labelStyle.copyWith(
+                                color: KrishiTheme.earthBrown,
+                                fontSize: 9,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     Row(
                       children: [
