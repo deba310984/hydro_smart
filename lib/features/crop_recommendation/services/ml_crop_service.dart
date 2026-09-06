@@ -66,8 +66,12 @@ class MLCropService {
   }
 
   static final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
+    // The cloud service is on a free tier that spins down after ~15 min
+    // idle; the first request then has to wait for a cold start, which
+    // routinely takes 50-60 s. A 30 s budget failed every time the app
+    // was opened after a quiet period, which looked like an outage.
+    connectTimeout: const Duration(seconds: 90),
+    receiveTimeout: const Duration(seconds: 90),
   ));
 
   // Memoized once per app session: debug builds prefer a local backend for

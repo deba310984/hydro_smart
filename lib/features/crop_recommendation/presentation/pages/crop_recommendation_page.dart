@@ -307,6 +307,13 @@ class _CropRecommendationPageState
                     SizedBox(height: 8),
                     Text('Analyzing conditions...',
                         style: TextStyle(color: Colors.grey)),
+                    SizedBox(height: 4),
+                    // The model service sleeps when idle, so a first
+                    // request after a quiet spell waits on a cold start.
+                    // Say so, or a long wait reads as a hang.
+                    Text('First request may take up to a minute while the AI service wakes up',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey, fontSize: 11)),
                   ],
                 ),
               ),
