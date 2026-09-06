@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydro_smart/core/theme/app_theme.dart';
 import 'chat_controller.dart';
@@ -275,14 +276,66 @@ class _ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: isUser ? Colors.white : Colors.grey[800],
-                      fontSize: 15,
-                      height: 1.5,
+                  // The assistant replies in markdown - headings, bold,
+                  // tables, lists. Rendering it as plain text showed the
+                  // raw ** and ### syntax to the user.
+                  if (isUser)
+                    Text(
+                      message.text,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
+                    )
+                  else
+                    MarkdownBody(
+                      data: message.text,
+                      selectable: true,
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                            color: Colors.grey[800],
+                            fontSize: 15,
+                            height: 1.5),
+                        h1: TextStyle(
+                            color: AppTheme.royalPurple,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold),
+                        h2: TextStyle(
+                            color: AppTheme.royalPurple,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold),
+                        h3: TextStyle(
+                            color: AppTheme.royalPurple,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700),
+                        strong: TextStyle(
+                            color: Colors.grey[900],
+                            fontWeight: FontWeight.bold),
+                        listBullet: TextStyle(
+                            color: Colors.grey[800], fontSize: 15),
+                        code: TextStyle(
+                          backgroundColor: Colors.grey[200],
+                          fontFamily: 'monospace',
+                          fontSize: 13,
+                        ),
+                        blockquoteDecoration: BoxDecoration(
+                          color: AppTheme.royalGold.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        tableBorder: TableBorder.all(
+                            color: Colors.grey.shade300, width: 1),
+                        tableHead: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13),
+                        tableBody: const TextStyle(fontSize: 13),
+                        horizontalRuleDecoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                                width: 1, color: Colors.grey.shade300),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                   if (message.isStreaming) ...[
                     const SizedBox(height: 8),
                     Row(
