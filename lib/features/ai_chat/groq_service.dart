@@ -9,8 +9,10 @@ class GroqRagService {
 
   static const String _baseUrl =
       'https://api.groq.com/openai/v1/chat/completions';
-  static const String _model =
-      'llama-3.3-70b-versatile'; // Current recommended model
+  // Groq retired llama-3.3-70b-versatile for free/developer tiers on
+  // 2026-06-17, and requests for it now fail with model_not_found. This is
+  // Groq's own recommended replacement for that model.
+  static const String _model = 'openai/gpt-oss-120b';
 
   // Constructor
   GroqRagService({required String groqApiKey}) {
