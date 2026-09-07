@@ -38,15 +38,15 @@
     {
       "number": 2,
       "file": "fig_pipeline.png",
-      "script": "diagrams.py",
+      "script": "compact_figs.py",
       "title": "Data generation and training pipeline.",
       "values": "Schematic. 150,000 samples, 20 crops x 19 states, 120,000/30,000 split, 400 iterations at lr 0.10.",
-      "sha256": "f90f2184e56cfcfa9867c2b2e2d1e9fa67ece0ed8510231d179705224d9b5025",
+      "sha256": "93e8a5362fbb0a6369d8965263a66d5724103971df85df624f70957955d2652c",
       "width_px": 814,
-      "height_px": 855,
+      "height_px": 617,
       "print_w_in": 2.71,
-      "print_h_in": 2.85,
-      "bytes": 100523
+      "print_h_in": 2.06,
+      "bytes": 70456
     },
     {
       "number": 3,
@@ -103,28 +103,28 @@
     {
       "number": 7,
       "file": "fig_per_class.png",
-      "script": "refigs.py",
-      "title": "Per-class F1 with precision and recall overlaid.",
+      "script": "compact_figs.py",
+      "title": "Per-class F1 with precision and recall overlaid (full width).",
       "values": "macro-F1 0.8754. Best: Kale 1.000, Coriander 0.994. Worst: Pea 0.736, Strawberry 0.770. Support 1,500 per class.",
-      "sha256": "1b77488afbe0137460f2ecc52cab3d5921bd9578e393c0a8363b66db23c8ba80",
-      "width_px": 982,
-      "height_px": 923,
-      "print_w_in": 3.27,
-      "print_h_in": 3.08,
-      "bytes": 74199
+      "sha256": "baccb65e4bfa3946632c5bca549064a274259c347c0b995d039b83e75fcf9475",
+      "width_px": 1799,
+      "height_px": 618,
+      "print_w_in": 6.0,
+      "print_h_in": 2.06,
+      "bytes": 76811
     },
     {
       "number": 8,
       "file": "fig_confusion_matrix.png",
-      "script": "experiments.py",
+      "script": "recm.py",
       "title": "Row-normalised confusion matrix over 20 classes.",
       "values": "Held-out set n = 30,000; row-normalised recall, cells below 4% suppressed. Overall accuracy 87.57%.",
-      "sha256": "8e2136a8eb2f65040db57f5eb59febd6fd1c7aedfe61296a4dabb1872f2b67cc",
-      "width_px": 1350,
-      "height_px": 1174,
-      "print_w_in": 4.5,
-      "print_h_in": 3.91,
-      "bytes": 134174
+      "sha256": "fa03ebbc8e4d35c691bbe58908348a0eaddfec3e1073cbd0d0d44aba96c40908",
+      "width_px": 1270,
+      "height_px": 1112,
+      "print_w_in": 4.23,
+      "print_h_in": 3.71,
+      "bytes": 125379
     },
     {
       "number": 9,
@@ -204,5 +204,6 @@
       "print_h_in": 2.07,
       "bytes": 55980
     }
-  ]
+  ],
+  "note": "Three figures were redrawn at compact aspect ratios for the seven-page layout; no figure was removed."
 }
