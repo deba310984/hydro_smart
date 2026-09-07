@@ -605,26 +605,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     return OutlinedButton(
       onPressed: () {
         KrishiTheme.mediumHaptic();
+        // State change alone switches the screen - see main.dart.
         ref.read(demoModeProvider.notifier).state = true;
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const HomeScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                          begin: const Offset(0.05, 0), end: Offset.zero)
-                      .animate(animation),
-                  child: child,
-                ),
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        );
       },
       style: OutlinedButton.styleFrom(
         foregroundColor: KrishiTheme.primaryGreen,

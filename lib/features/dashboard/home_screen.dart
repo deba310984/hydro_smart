@@ -479,13 +479,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: OutlinedButton.icon(
                   onPressed: () async {
                     Navigator.pop(context);
+                    // Clearing state is enough - main.dart routes on it.
+                    // Pushing LoginScreen here left the Navigator holding a
+                    // route that MaterialApp.home could no longer replace,
+                    // so a later sign-in appeared to do nothing until the
+                    // app was force-closed.
+                    ref.read(demoModeProvider.notifier).state = false;
                     await ref.read(authControllerProvider.notifier).signOut();
-                    if (mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        (route) => false,
-                      );
-                    }
                   },
                   icon: const Icon(Icons.logout_rounded, size: 18),
                   label:

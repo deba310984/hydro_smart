@@ -59,6 +59,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final splashComplete = ref.watch(splashCompleteProvider);
     final authState = ref.watch(authStateProvider);
+    final demoMode = ref.watch(demoModeProvider);
 
     // Auto-check for updates when app starts
     ref.watch(autoUpdateCheckProvider);
@@ -77,11 +78,15 @@ class MyApp extends ConsumerWidget {
                 body: Center(child: Text('Auth Error: $e')),
               ),
               data: (user) {
-                if (user == null) {
-                  return const LoginScreen();
-                } else {
-                  return const AppWithUpdateCheck();
-                }
+                // Routing is driven purely by state. Screens must never
+                // push Login or Home imperatively: MaterialApp.home only
+                // defines the *initial* route, so once something calls
+                // pushReplacement the Navigator stack stops reflecting
+                // this builder and the app appears frozen on the old
+                // screen until the process is killed.
+                if (user != null) return const AppWithUpdateCheck();
+                if (demoMode) return const HomeScreen();
+                return const LoginScreen();
               },
             )
           : SplashScreen(

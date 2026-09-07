@@ -21,7 +21,8 @@ class LivePhCard extends ConsumerWidget {
       case PhStatus.optimal:
         return KrishiTheme.primaryGreen;
       case PhStatus.slightlyAlkaline:
-        return KrishiTheme.goldenWheat;
+        // Card is white; the base gold reads at ~1.8:1 here.
+        return KrishiTheme.goldenWheatOnLight;
       case PhStatus.unknown:
         return KrishiTheme.monsoonSky;
     }

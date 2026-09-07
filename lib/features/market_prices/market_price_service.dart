@@ -151,16 +151,16 @@ class MarketPriceService {
 
   static List<MarketPrice> _buildInternationalPricesWithFx(double usdToInr) {
     // CBOT/ICE approximate reference prices (USD per metric ton)
-    // Updated with realistic 2026 ranges
+    // Benchmark settlements as of 4 Sep 2026 (CBOT / ICE)
     final commodities = [
-      {'name': 'Wheat', 'usdPerTon': 260.0, 'change': 1.8},
-      {'name': 'Rice', 'usdPerTon': 520.0, 'change': -0.5},
-      {'name': 'Corn', 'usdPerTon': 215.0, 'change': 2.1},
-      {'name': 'Soybean', 'usdPerTon': 450.0, 'change': -1.2},
-      {'name': 'Sugar', 'usdPerTon': 480.0, 'change': 3.4},
-      {'name': 'Cotton', 'usdPerTon': 1850.0, 'change': -0.7},
-      {'name': 'Coffee', 'usdPerTon': 4200.0, 'change': 4.2},
-      {'name': 'Pepper', 'usdPerTon': 5800.0, 'change': 1.5},
+      {'name': 'Wheat', 'usdPerTon': 263.0, 'change': 1.8},
+      {'name': 'Rice', 'usdPerTon': 339.0, 'change': -0.5},
+      {'name': 'Corn', 'usdPerTon': 202.0, 'change': 2.1},
+      {'name': 'Soybean', 'usdPerTon': 475.0, 'change': -1.2},
+      {'name': 'Sugar', 'usdPerTon': 398.0, 'change': 3.4},
+      {'name': 'Cotton', 'usdPerTon': 1903.0, 'change': -0.7},
+      {'name': 'Coffee', 'usdPerTon': 6517.0, 'change': 4.2},
+      {'name': 'Pepper', 'usdPerTon': 7850.0, 'change': 1.5},
     ];
 
     return commodities.map((c) {
@@ -180,7 +180,11 @@ class MarketPriceService {
   }
 
   // ─── Realistic Fallback Data ─────────────────────────────────
-  // Based on actual Indian market prices (Feb 2026 ranges)
+  // Domestic: AGMARKNET / mandi modal rates, 07 Sep 2026.
+  // International: TradingEconomics settlements, 04 Sep 2026,
+  // converted to per-kg (wheat/soy 27.216 kg-bu, corn 25.4, lb 0.4536).
+  // These are the last-resort fallback: the live data.gov.in and NAPMC
+  // feeds are tried first and take precedence whenever reachable.
   // ─────────────────────────────────────────────────────────────
 
   static List<MarketPrice> _getRealisticDomesticPrices() {
@@ -188,7 +192,7 @@ class MarketPriceService {
     return [
       MarketPrice(
           commodity: 'Wheat',
-          price: 26.50,
+          price: 22.50,
           currency: '₹',
           change: _dayChange(now, 1),
           unit: '/kg',
@@ -196,7 +200,7 @@ class MarketPriceService {
           source: 'Azadpur Mandi'),
       MarketPrice(
           commodity: 'Rice (Basmati)',
-          price: 42.00,
+          price: 48.00,
           currency: '₹',
           change: _dayChange(now, 2),
           unit: '/kg',
@@ -204,7 +208,7 @@ class MarketPriceService {
           source: 'Karnal Mandi'),
       MarketPrice(
           commodity: 'Tomato',
-          price: 38.00,
+          price: 18.00,
           currency: '₹',
           change: _dayChange(now, 3),
           unit: '/kg',
@@ -212,7 +216,7 @@ class MarketPriceService {
           source: 'Azadpur Mandi'),
       MarketPrice(
           commodity: 'Onion',
-          price: 32.00,
+          price: 22.00,
           currency: '₹',
           change: _dayChange(now, 4),
           unit: '/kg',
@@ -220,7 +224,7 @@ class MarketPriceService {
           source: 'Lasalgaon Mandi'),
       MarketPrice(
           commodity: 'Potato',
-          price: 18.50,
+          price: 14.00,
           currency: '₹',
           change: _dayChange(now, 5),
           unit: '/kg',
@@ -228,7 +232,7 @@ class MarketPriceService {
           source: 'Agra Mandi'),
       MarketPrice(
           commodity: 'Green Chili',
-          price: 55.00,
+          price: 48.00,
           currency: '₹',
           change: _dayChange(now, 6),
           unit: '/kg',
@@ -236,7 +240,7 @@ class MarketPriceService {
           source: 'Guntur Mandi'),
       MarketPrice(
           commodity: 'Spinach',
-          price: 28.00,
+          price: 24.00,
           currency: '₹',
           change: _dayChange(now, 7),
           unit: '/kg',
@@ -244,7 +248,7 @@ class MarketPriceService {
           source: 'Pune Mandi'),
       MarketPrice(
           commodity: 'Capsicum',
-          price: 65.00,
+          price: 58.00,
           currency: '₹',
           change: _dayChange(now, 8),
           unit: '/kg',
@@ -252,7 +256,7 @@ class MarketPriceService {
           source: 'Bangalore Mandi'),
       MarketPrice(
           commodity: 'Coriander',
-          price: 72.00,
+          price: 65.00,
           currency: '₹',
           change: _dayChange(now, 9),
           unit: '/kg',
@@ -260,7 +264,7 @@ class MarketPriceService {
           source: 'Rajkot Mandi'),
       MarketPrice(
           commodity: 'Cucumber',
-          price: 22.00,
+          price: 20.00,
           currency: '₹',
           change: _dayChange(now, 10),
           unit: '/kg',
@@ -274,76 +278,76 @@ class MarketPriceService {
     return [
       MarketPrice(
           commodity: 'Wheat',
-          price: 21.58,
+          price: 23.15,
           currency: '\$',
           change: _dayChange(now, 11),
           unit: '/kg',
           market: 'International',
           source: 'CBOT',
-          priceUsd: 0.26),
+          priceUsd: 0.263),
       MarketPrice(
           commodity: 'Rice',
-          price: 43.16,
+          price: 29.85,
           currency: '\$',
           change: _dayChange(now, 12),
           unit: '/kg',
           market: 'International',
           source: 'CBOT',
-          priceUsd: 0.52),
+          priceUsd: 0.339),
       MarketPrice(
           commodity: 'Corn',
-          price: 17.85,
+          price: 17.75,
           currency: '\$',
           change: _dayChange(now, 13),
           unit: '/kg',
           market: 'International',
           source: 'CBOT',
-          priceUsd: 0.22),
+          priceUsd: 0.202),
       MarketPrice(
           commodity: 'Soybean',
-          price: 37.35,
+          price: 41.85,
           currency: '\$',
           change: _dayChange(now, 14),
           unit: '/kg',
           market: 'International',
           source: 'CBOT',
-          priceUsd: 0.45),
+          priceUsd: 0.475),
       MarketPrice(
           commodity: 'Sugar',
-          price: 39.84,
+          price: 35.05,
           currency: '\$',
           change: _dayChange(now, 15),
           unit: '/kg',
           market: 'International',
           source: 'ICE',
-          priceUsd: 0.48),
+          priceUsd: 0.398),
       MarketPrice(
           commodity: 'Cotton',
-          price: 153.55,
+          price: 167.45,
           currency: '\$',
           change: _dayChange(now, 16),
           unit: '/kg',
           market: 'International',
           source: 'ICE',
-          priceUsd: 1.85),
+          priceUsd: 1.903),
       MarketPrice(
           commodity: 'Coffee',
-          price: 348.60,
+          price: 573.50,
           currency: '\$',
           change: _dayChange(now, 17),
           unit: '/kg',
           market: 'International',
           source: 'ICE',
-          priceUsd: 4.20),
+          priceUsd: 6.517),
       MarketPrice(
           commodity: 'Pepper',
-          price: 481.40,
+          price: 690.80,
           currency: '\$',
           change: _dayChange(now, 18),
           unit: '/kg',
           market: 'International',
           source: 'Global',
-          priceUsd: 5.80),
+          priceUsd: 7.850),
     ];
   }
 

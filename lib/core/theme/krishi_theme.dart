@@ -28,6 +28,14 @@ class KrishiTheme {
   /// Golden Wheat - Success states and accents
   static const Color goldenWheat = Color(0xFFFFB300);
 
+  // Text-safe variants for use on white / parchment surfaces. The base
+  // accent colours are tuned for the dark green header, where they read
+  // well, but on a light card they fall to ~1.8:1 - far under the 4.5:1
+  // WCAG AA minimum for body text. These darkened tones clear it.
+  static const Color goldenWheatOnLight = Color(0xFF966900);
+  static const Color freshLimeOnLight = Color(0xFF587C2F);
+  static const Color terracottaOnLight = Color(0xFFA66038);
+
   /// Deep Soil - Dark backgrounds
   static const Color deepSoil = Color(0xFF1B2631);
 
