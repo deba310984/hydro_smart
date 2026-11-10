@@ -6,15 +6,18 @@ class GroqRagService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late String apiKey;
   bool isConfigured = false;
+  String? lastFailureReason;
 
   static const String _baseUrl =
       'https://api.groq.com/openai/v1/chat/completions';
-  // Groq retired llama-3.3-70b-versatile for free/developer tiers on
-  // 2026-06-17, and requests for it now fail with model_not_found. This is
-  // Groq's own recommended replacement for that model.
-  static const String _model = 'openai/gpt-oss-120b';
+  // Groq's most stable free-tier production model. Falls back to the next
+  // model in the list if the primary returns model_not_found or 4xx.
+  static const List<String> _modelChain = [
+    'llama-3.1-8b-instant',
+    'llama-3.3-70b-versatile',
+    'openai/gpt-oss-120b',
+  ];
 
-  // Constructor
   GroqRagService({required String groqApiKey}) {
     apiKey = groqApiKey;
     isConfigured = groqApiKey.isNotEmpty;
@@ -60,38 +63,38 @@ class GroqRagService {
   /// Stream AI response from Groq API
   Stream<String> getStreamingResponse(String userQuery) async* {
     if (!isConfigured) {
-      yield '''I'm currently offline. To enable the AI Assistant:
+      final reason = lastFailureReason ?? 'no API key was found';
+      yield '''The AI Assistant is not configured yet ($reason).
 
-1. Go to Firebase Console (console.firebase.google.com)
-2. Select your "hydro_smart" project
-3. Go to Firestore Database
-4. Edit config/gemini_config document
-5. Add field: groqApiKey = your-groq-api-key
+**Fastest fix (30 seconds):**
+Get a free Groq API key at https://console.groq.com/keys, then run the app with:
 
-To get your Groq API key:
-1. Visit https://console.groq.com
-2. Sign up (free - no credit card)
-3. Create API Key
-4. Copy and save it
+    flutter run --dart-define=GROQ_API_KEY=gsk_yourkeyhere
 
-Once configured, restart the app and I'll be ready to help! 🚀''';
+**Or via Firebase (persistent for all users):**
+1. Firebase Console → Firestore Database
+2. Open document `config/gemini_config`
+3. Set field `groqApiKey` = your key (string)
+4. Make sure Firestore rules allow signed-in reads on `config/*`
+
+Groq is free (no credit card) and gives 30 requests/minute.''';
       return;
     }
 
+    // Retrieve context from knowledge base (never let this block the call).
+    List<String> relevantDocs = [];
     try {
-      // Retrieve relevant documents
-      final relevantDocs = await retrieveRelevantDocuments(userQuery);
+      relevantDocs = await retrieveRelevantDocuments(userQuery);
+    } catch (e) {
+      print('[GroqService] KB retrieval skipped: $e');
+    }
 
-      // Build context
-      String context = '';
-      if (relevantDocs.isNotEmpty) {
-        context =
-            'Context from knowledge base:\n${relevantDocs.join('\n\n')}\n\n';
-      }
+    final context = relevantDocs.isNotEmpty
+        ? 'Context from knowledge base:\n${relevantDocs.join('\n\n')}\n\n'
+        : '';
 
-      // Create prompt
-      final prompt =
-          '''You are an expert hydroponics farm management AI assistant. 
+    final prompt =
+        '''You are an expert hydroponics farm management AI assistant.
 Help farmers optimize their hydroponic systems, manage crops, and maximize yields.
 
 $context
@@ -109,37 +112,71 @@ Instructions:
 
 Answer:''';
 
-      // Make request to Groq API with streaming
-      final response = await http.post(
-        Uri.parse(_baseUrl),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': _model,
-          'messages': [
-            {
-              'role': 'user',
-              'content': prompt,
-            }
-          ],
-          'temperature': 0.7,
-          'max_tokens': 1024,
-          'stream': false, // Non-streaming for simplicity
-        }),
-      );
+    // Try each model in the chain; fall through on 4xx/model_not_found.
+    for (final model in _modelChain) {
+      try {
+        final response = await http
+            .post(
+              Uri.parse(_baseUrl),
+              headers: {
+                'Authorization': 'Bearer $apiKey',
+                'Content-Type': 'application/json',
+              },
+              body: jsonEncode({
+                'model': model,
+                'messages': [
+                  {'role': 'user', 'content': prompt}
+                ],
+                'temperature': 0.7,
+                'max_tokens': 1024,
+                'stream': false,
+              }),
+            )
+            .timeout(const Duration(seconds: 30));
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final content = data['choices'][0]['message']['content'] as String;
-        yield content;
-      } else {
-        yield 'Error: ${response.statusCode} - ${response.body}';
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body) as Map<String, dynamic>;
+          final content =
+              data['choices'][0]['message']['content'] as String? ?? '';
+          yield content;
+          return;
+        }
+
+        // 401 = bad key: no point trying other models.
+        if (response.statusCode == 401) {
+          yield '''The Groq API rejected your key (HTTP 401).
+
+Check that the key at Firebase `config/gemini_config.groqApiKey` (or the `GROQ_API_KEY` dart-define) is a valid key from https://console.groq.com/keys, not a placeholder or an expired one.''';
+          return;
+        }
+
+        // 404 / model_not_found: try the next model in the chain.
+        final body = response.body.toLowerCase();
+        if (response.statusCode == 404 || body.contains('model_not_found')) {
+          print('[GroqService] model "$model" unavailable, trying next');
+          continue;
+        }
+
+        // 429 = rate limit
+        if (response.statusCode == 429) {
+          yield 'Groq is rate-limiting requests (30/min on the free tier). Wait a minute and try again.';
+          return;
+        }
+
+        // Anything else: surface it.
+        yield 'Groq API returned HTTP ${response.statusCode}. Details: ${response.body}';
+        return;
+      } catch (e) {
+        print('[GroqService] Network error on "$model": $e');
+        // Try next model on transient failure; if this is the last one, fall out.
+        if (model == _modelChain.last) {
+          yield 'Could not reach the Groq API. Check your internet connection. ($e)';
+          return;
+        }
       }
-    } catch (e) {
-      yield 'Error: Unable to get response. ${e.toString()}';
     }
+
+    yield 'All Groq models in the fallback chain are unavailable. Check https://groqstatus.com — this is rare.';
   }
 
   /// Get response from Groq
@@ -190,7 +227,7 @@ Answer:''';
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'model': _model,
+          'model': _modelChain.first,
           'messages': [
             {
               'role': 'user',

@@ -1,20 +1,26 @@
 /*
  * Hydro Smart - ESP32 pH Monitoring Node
  * ======================================
- * Reads a Gravity/DFRobot analog pH probe and publishes the value to
- * Firebase Realtime Database, where the Hydro Smart Flutter app streams
- * it live.
+ * Reads an analog pH probe via a 5V-powered signal board (e.g. the
+ * "DO-PH-EC Sensor" board sold on graylogix.in, PH-4502C and
+ * compatible variants) and publishes to Firebase Realtime Database,
+ * which the Hydro Smart Flutter app streams live.
  *
  * HARDWARE WIRING
- *   pH probe  --BNC-->  pH sensor module
- *   module VCC  ->  ESP32 3V3   (use 5V/VIN only if your board needs it)
- *   module GND  ->  ESP32 GND   (shared ground is essential)
- *   module AO   ->  ESP32 GPIO34
- *   module DO   ->  not connected
+ *   pH probe  --BNC-->  pH sensor signal board
+ *   board 5V   ->  ESP32 5V (or VIN) pin   ← USB-C to ESP32 is enough
+ *   board GND  ->  ESP32 GND              (shared ground is essential)
+ *   board OUT  ->  ESP32 GPIO36 (VP)      analog output pin
  *
- *   GPIO34 is on ADC1. Do NOT move this to an ADC2 pin: ADC2 is disabled
- *   whenever Wi-Fi is active, so the reading would silently die the moment
- *   the board connects.
+ *   The board is powered at 5V but its analog OUT typically swings
+ *   only 0 - 3V, safe for the ESP32's 3.3V ADC. VERIFY WITH A
+ *   MULTIMETER before connecting OUT: with power on and the trimpot at
+ *   maximum, OUT must stay < 3.3V. If it exceeds 3.3V at any trimpot
+ *   position, insert a 2x 10k voltage divider between OUT and GPIO36.
+ *
+ *   GPIO36 (aka VP, SENSOR_VP) is on ADC1. Do NOT move this to an ADC2
+ *   pin: ADC2 is disabled whenever Wi-Fi is active, so the reading would
+ *   silently die the moment the board connects to Wi-Fi.
  *
  * LIBRARY REQUIRED (Arduino IDE > Library Manager)
  *   "Firebase ESP32 Client" by Mobizt  (provides FirebaseESP32.h)
@@ -38,14 +44,15 @@
 // ─────────────────────────────────────────────
 // 2. CALIBRATION  (see CALIBRATION section below)
 // ─────────────────────────────────────────────
-// Two-point calibration. Replace after measuring your own probe:
-//   put probe in pH 6.86 buffer -> record voltage -> V1
-//   put probe in pH 4.00 buffer -> record voltage -> V2
-float CAL_PH_1 = 6.86,  CAL_V_1 = 1.500;   // volts at pH 6.86
-float CAL_PH_2 = 4.00,  CAL_V_2 = 1.760;   // volts at pH 4.00
+// Two-point straight-line fit. The defaults below match the trimmer
+// factory setting on the how2electronics board (pH 7 -> 2.0 V,
+// pH 4 -> 1.5 V); replace with your own measured voltages after
+// running the buffer procedure at the bottom of this file.
+float CAL_PH_1 = 7.00,  CAL_V_1 = 2.000;   // volts at pH 7.00
+float CAL_PH_2 = 4.00,  CAL_V_2 = 1.500;   // volts at pH 4.00
 
 // ─────────────────────────────────────────────
-const int   PH_PIN       = 34;
+const int   PH_PIN       = 36;   // GPIO36 / VP, per how2electronics guide
 const float ADC_MAX      = 4095.0;   // 12-bit ADC
 const float ADC_REF_V    = 3.3;
 const unsigned long SEND_INTERVAL_MS = 3000;   // publish every 3 s
@@ -277,14 +284,20 @@ void loop() {
  * ─────────────────────────────────────────────
  * CALIBRATION PROCEDURE
  * ─────────────────────────────────────────────
+ * The guide's factory trimmer target is pH4 = 1.5 V, pH7 = 2.0 V,
+ * pH9 = 2.5 V. In practice every probe drifts, so you should still
+ * measure your own and update CAL_V_1 / CAL_V_2.
+ *
  * 1. Flash this sketch as-is and open Serial Monitor at 115200.
  * 2. Rinse the probe in distilled water, blot dry (never wipe - it
  *    scratches the glass bulb).
- * 3. Sit the probe in pH 6.86 buffer. Wait ~60 s for the reading to
+ * 3. Sit the probe in pH 7.00 buffer. Wait ~60 s for the reading to
  *    settle, then note the "V=" value. Put that in CAL_V_1.
  * 4. Rinse again, sit in pH 4.00 buffer, wait, note "V=" -> CAL_V_2.
  * 5. Re-flash with your two voltages filled in.
  * 6. Check against pH 9.18 buffer - you should land within +/-0.1.
+ *    (If the module's own trimmer is far off, loosen it a hair so
+ *    the readings bracket 0.5 V - 3.0 V rather than clipping.)
  *
  * Recalibrate every 2-4 weeks; glass electrodes drift as they age.
  * Store the probe in KCl storage solution, never in distilled water.
