@@ -808,9 +808,10 @@
   },
   {
     "id": "chili-001",
-    "cropName": "Green Chili",
+    "cropName": "Chili Pepper",
     "imageUrl": "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400",
     "commonNames": [
+      "Green Chili",
       "Hot Pepper",
       "Hari Mirch",
       "Cayenne"

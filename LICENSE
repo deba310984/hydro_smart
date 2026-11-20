@@ -1,0 +1,31 @@
+HydroSmart - Proprietary Software License
+
+Copyright (c) 2026 Debjit Sarkar. All rights reserved.
+
+This repository and everything in it - including the mobile application source
+code, the machine-learning training and prediction code, the ESP32 firmware,
+datasets, documentation, designs, figures and the HydroSmart name and branding
+(together, the "Software") - is the exclusive property of Debjit Sarkar
+(the "Owner").
+
+1. No licence is granted. Except as expressly stated in section 2, no right or
+   licence to use, copy, modify, merge, publish, distribute, sublicense, sell,
+   deploy, or create derivative works of the Software, in whole or in part, is
+   granted to anyone, whether by implication, estoppel or otherwise.
+
+2. Viewing only. Because this repository is hosted publicly on GitHub, visitors
+   may view the Software on GitHub and make the copies GitHub's Terms of Service
+   require for that purpose. This does not permit any other use.
+
+3. Written permission required. Any other use, including academic reuse beyond
+   citation, commercial use, government or institutional deployment, and
+   inclusion in other products, requires prior written permission signed by the
+   Owner. Requests: debjitsrkr310984@gmail.com
+
+4. No warranty. The Software is provided "as is", without warranty of any kind,
+   express or implied. The Owner is not liable for any claim, damages or other
+   liability arising from the Software or its use.
+
+5. Third-party components. Open-source libraries and public datasets used by the
+   Software remain under their own licences. This notice covers only the
+   original work of the Owner.

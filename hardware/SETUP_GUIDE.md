@@ -107,7 +107,7 @@ An uncalibrated probe reports confident nonsense.
 5. Re-flash. Verify against **pH 9.18** buffer — expect within ±0.1.
 
 Recalibrate every 2–4 weeks; glass electrodes drift as they age. Store the
-probe in KCl storage solution, **never** in distilled water (it ruins the bulb).
+probe tip in pH 4.0 buffer (as the electrode leaflet says), **never** in distilled water (it ruins the bulb).
 
 ---
 

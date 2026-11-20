@@ -4,9 +4,11 @@ import '../models/weather_model.dart';
 
 /// Service to handle location permissions and get current location
 class LocationService {
+  // High accuracy lets the OS use GPS; with only approximate permission the
+  // result is still coarsened to city level, which is all weather needs.
   static const LocationSettings _locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
-    distanceFilter: 100, // Update only when moved 100m
+    distanceFilter: 1000,
   );
 
   /// Check if location services are enabled
@@ -14,22 +16,23 @@ class LocationService {
     return await Geolocator.isLocationServiceEnabled();
   }
 
-  /// Check current location permission status
-  static Future<LocationPermissionStatus> checkLocationPermission() async {
-    final permission = await Permission.location.status;
-
-    switch (permission) {
-      case PermissionStatus.granted:
+  static LocationPermissionStatus _fromGeolocator(LocationPermission p) {
+    switch (p) {
+      case LocationPermission.always:
+      case LocationPermission.whileInUse:
+        // Approximate-only grants also land here, which is all weather needs.
         return LocationPermissionStatus.granted;
-      case PermissionStatus.denied:
-        return LocationPermissionStatus.denied;
-      case PermissionStatus.permanentlyDenied:
+      case LocationPermission.deniedForever:
         return LocationPermissionStatus.permanentlyDenied;
-      case PermissionStatus.restricted:
-      case PermissionStatus.limited:
-      case PermissionStatus.provisional:
+      case LocationPermission.denied:
+      case LocationPermission.unableToDetermine:
         return LocationPermissionStatus.denied;
     }
+  }
+
+  /// Check current location permission status
+  static Future<LocationPermissionStatus> checkLocationPermission() async {
+    return _fromGeolocator(await Geolocator.checkPermission());
   }
 
   /// Request location permission
@@ -50,21 +53,7 @@ class LocationService {
       return LocationPermissionStatus.permanentlyDenied;
     }
 
-    // Request permission if denied
-    final permission = await Permission.location.request();
-
-    switch (permission) {
-      case PermissionStatus.granted:
-        return LocationPermissionStatus.granted;
-      case PermissionStatus.denied:
-        return LocationPermissionStatus.denied;
-      case PermissionStatus.permanentlyDenied:
-        return LocationPermissionStatus.permanentlyDenied;
-      case PermissionStatus.restricted:
-      case PermissionStatus.limited:
-      case PermissionStatus.provisional:
-        return LocationPermissionStatus.denied;
-    }
+    return _fromGeolocator(await Geolocator.requestPermission());
   }
 
   /// Get current position with permission handling

@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Location permissions for weather updates -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- City-level location is enough for weather. Holding FINE makes geolocator
+         register a GNSS NMEA listener whose removal can block the main thread (ANR). -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     

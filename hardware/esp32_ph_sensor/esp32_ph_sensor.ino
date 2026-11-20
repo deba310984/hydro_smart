@@ -300,5 +300,6 @@ void loop() {
  *    the readings bracket 0.5 V - 3.0 V rather than clipping.)
  *
  * Recalibrate every 2-4 weeks; glass electrodes drift as they age.
- * Store the probe in KCl storage solution, never in distilled water.
+ * Store the probe tip in pH 4.0 buffer (per the electrode leaflet), never
+ * in distilled water.
  */
